@@ -1,0 +1,18 @@
+{
+  "kind": "collectionType",
+  "collectionName": "testkubs",
+  "info": {
+    "singularName": "testkub",
+    "pluralName": "testkubs",
+    "displayName": "testkub"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "imfiat": {
+      "type": "string"
+    }
+  }
+}

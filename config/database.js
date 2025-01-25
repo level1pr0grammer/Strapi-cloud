@@ -1,55 +1,15 @@
-const path = require('path');
-
-module.exports = ({ env }) => {
-  const client = env('DATABASE_CLIENT', 'postgres'); // Default to 'postgres'
-
-  const connections = {
-    mysql: {
-      connection: {
-        host: env('DATABASE_HOST', 'localhost'),
-        port: env.int('DATABASE_PORT', 3306),
-        database: env('DATABASE_NAME', 'strapi'),
-        user: env('DATABASE_USERNAME', 'strapi'),
-        password: env('DATABASE_PASSWORD', 'strapi'),
-        ssl: env.bool('DATABASE_SSL', false) && {
-          key: env('DATABASE_SSL_KEY', undefined),
-          cert: env('DATABASE_SSL_CERT', undefined),
-          ca: env('DATABASE_SSL_CA', undefined),
-          capath: env('DATABASE_SSL_CAPATH', undefined),
-          cipher: env('DATABASE_SSL_CIPHER', undefined),
-          rejectUnauthorized: env.bool('DATABASE_SSL_REJECT_UNAUTHORIZED', true),
-        },
-      },
-      pool: { min: env.int('DATABASE_POOL_MIN', 2), max: env.int('DATABASE_POOL_MAX', 10) },
-    },
-    postgres: {
-      connection: {
-        host: env('DATABASE_HOST', 'postgres.vultrdb.com'),
-        port: env.int('DATABASE_PORT', 5432),
-        database: env('DATABASE_NAME', 'default'),
-        user: env('DATABASE_USERNAME', 'user'),
-        password: env('DATABASE_PASSWORD', 'password'),
-        schema: env('DATABASE_SCHEMA', 'public'),
-        ssl: {
-          rejectUnauthorized: env.bool('DATABASE_SSL_SELF', false),
-        },
-      },
-      pool: { min: env.int('DATABASE_POOL_MIN', 2), max: env.int('DATABASE_POOL_MAX', 10) },
-    },
-    sqlite: {
-      connection: {
-        filename: path.join(__dirname, '..', env('DATABASE_FILENAME', '.tmp/data.db')),
-      },
-      useNullAsDefault: true,
-    },
-  };
-
-  return {
+module.exports = ({ env }) => ({
+  connection: {
+    client: 'postgres',
     connection: {
-      client,
-      ...connections[client],
-      acquireConnectionTimeout: env.int('DATABASE_CONNECTION_TIMEOUT', 60000),
-      debug: false,
+      host: env('DATABASE_HOST', '35.198.199.2'), // Public IP of your Cloud SQL instance
+      port: env.int('DATABASE_PORT', 5432),      // Port should be an integer
+      user: env('DATABASE_USERNAME', 'postgres'),
+      password: env('DATABASE_PASSWORD', 'fiatjwin'),
+      database: env('DATABASE_NAME', 'postgresql'), // Use the actual database name, NOT the instance connection name
+      ssl: {
+        rejectUnauthorized: false,  // Typically set to false for Cloud SQL
+      },
     },
-  };
-};
+  },
+});
