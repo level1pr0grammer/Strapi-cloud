@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  namespace: production
+  name: strapi-app-ingress
+spec:
+  # TLS secret if you have any
+  #tls:
+  #  - secretName: mydomain-ssl
+  rules:
+  - host: yourdomain.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: strapi-app-service
+          servicePort: 80

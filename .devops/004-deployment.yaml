@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: strapi-app
+  namespace: production
+  labels:
+    app: strapi-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: strapi-app
+  template:
+    metadata:
+      labels:
+        app: strapi-app
+    spec:
+      containers:
+      - name: user-service
+        # Extract this from Google Container Registry
+        image: gcr.io/gcr.io/cloud-project-448820/cms-strapi-image:latest
+        imagePullPolicy: Always
+        env:
+          - name: DATABASE_HOST
+            value: 10.126.128.3
+          - name: DATABASE__PORT
+            value: 5432
+          - name: DATABASE_NAME
+            value: <mysql_database_schema_name>
+          - name: DATABASE_USERNAME
+            value: postgres
+          - name: DB_MYSQL_PASS
+            valueFrom:
+              secretKeyRef:
+                name: strapi-secrets
+                key : db_password
+          - name: ADMIN_JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: strapi-secrets
+                key : jwt_key
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "1"
+          limits:
+            memory: "1Gi"
+            cpu: "2"
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 10
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 10
