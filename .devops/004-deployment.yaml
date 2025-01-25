@@ -22,23 +22,23 @@ spec:
         imagePullPolicy: Always
         env:
           - name: DATABASE_HOST
-            value: 10.126.128.3
+            value: "10.126.128.3"
           - name: DATABASE__PORT
-            value: 5432
+            value: "5432"
           - name: DATABASE_NAME
-            value: <mysql_database_schema_name>
+            value: cloud-project-448820:asia-southeast1:postgresql
           - name: DATABASE_USERNAME
             value: postgres
           - name: DB_MYSQL_PASS
             valueFrom:
               secretKeyRef:
                 name: strapi-secrets
-                key : db_password
+                key: db_password
           - name: ADMIN_JWT_SECRET
             valueFrom:
               secretKeyRef:
                 name: strapi-secrets
-                key : jwt_key
+                key: jwt_key
         ports:
         - containerPort: 80
         resources:
