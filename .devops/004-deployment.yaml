@@ -18,7 +18,7 @@ spec:
       containers:
       - name: user-service
         # Extract this from Google Container Registry
-        image: gcr.io/cloud-project-448820/cms-strapi-image:latest
+        image: gcr.io/cloud-project-448820/strapi-image:latest
         imagePullPolicy: Always
         env:
           - name: DATABASE_HOST
