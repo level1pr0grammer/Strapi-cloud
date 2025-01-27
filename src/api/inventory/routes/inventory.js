@@ -1,9 +1,9 @@
 'use strict';
 
 /**
- * testkub router
+ * inventory router
  */
 
 const { createCoreRouter } = require('@strapi/strapi').factories;
 
-module.exports = createCoreRouter('api::testkub.testkub');
+module.exports = createCoreRouter('api::inventory.inventory');

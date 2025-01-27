@@ -1,0 +1,63 @@
+{
+  "kind": "collectionType",
+  "collectionName": "market_places",
+  "info": {
+    "singularName": "market-place",
+    "pluralName": "market-places",
+    "displayName": "Market Place",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "amount": {
+      "type": "integer",
+      "unique": false,
+      "min": 1,
+      "default": 1,
+      "required": true,
+      "max": 99
+    },
+    "publish_date": {
+      "type": "datetime"
+    },
+    "end_date": {
+      "type": "datetime"
+    },
+    "sell_status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "success",
+        "fail"
+      ],
+      "default": "pending"
+    },
+    "seller": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "seller_market_places"
+    },
+    "buyer": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "buyer_market_places"
+    },
+    "item": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::item.item",
+      "inversedBy": "market_places"
+    },
+    "price": {
+      "type": "integer",
+      "min": 0,
+      "default": 0,
+      "required": true
+    }
+  }
+}

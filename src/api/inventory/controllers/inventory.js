@@ -1,9 +1,9 @@
 'use strict';
 
 /**
- * testkub controller
+ * inventory controller
  */
 
 const { createCoreController } = require('@strapi/strapi').factories;
 
-module.exports = createCoreController('api::testkub.testkub');
+module.exports = createCoreController('api::inventory.inventory');

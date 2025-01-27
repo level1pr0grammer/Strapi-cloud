@@ -1,9 +1,9 @@
 'use strict';
 
 /**
- * testkub service
+ * inventory service
  */
 
 const { createCoreService } = require('@strapi/strapi').factories;
 
-module.exports = createCoreService('api::testkub.testkub');
+module.exports = createCoreService('api::inventory.inventory');
