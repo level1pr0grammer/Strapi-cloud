@@ -378,7 +378,7 @@ export interface ApiInventoryInventory extends Struct.CollectionTypeSchema {
     singularName: 'inventory';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
@@ -398,7 +398,8 @@ export interface ApiInventoryInventory extends Struct.CollectionTypeSchema {
           min: 1;
         },
         number
-      >;
+      > &
+      Schema.Attribute.DefaultTo<1>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -418,7 +419,7 @@ export interface ApiItemItem extends Struct.CollectionTypeSchema {
     singularName: 'item';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;

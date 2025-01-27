@@ -8,13 +8,14 @@
     "description": ""
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
     "stack_item": {
       "type": "integer",
-      "min": 1
+      "min": 1,
+      "default": 1
     },
     "user": {
       "type": "relation",
