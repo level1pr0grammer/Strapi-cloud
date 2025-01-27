@@ -458,7 +458,7 @@ export interface ApiMarketPlaceMarketPlace extends Struct.CollectionTypeSchema {
     singularName: 'market-place';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     amount: Schema.Attribute.Integer &
