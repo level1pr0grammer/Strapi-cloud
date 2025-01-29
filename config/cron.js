@@ -3,7 +3,6 @@ const cron = require('node-cron');
 module.exports = () => {
   // ตั้งค่าให้ทำงานทุกๆ 10 นาที
   cron.schedule('*/10 * * * *', async () => {
-    console.log('Running checkAndUpdateStatus every minute');
     try {
       await strapi.service('api::market-place.custom-service').checkAndUpdateStatus();
     } catch (error) {
