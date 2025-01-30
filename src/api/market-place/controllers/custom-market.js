@@ -1,7 +1,5 @@
 'use strict';
 
-const marketPlace = require("./market-place");
-
 module.exports = {
   async checkStatus(ctx) {
     try {
@@ -77,5 +75,89 @@ module.exports = {
     } catch (err) {
       ctx.throw(500, err);
     }
-  }
+  },
+  async BuyItem(ctx) {
+    const info = ctx.state.user;
+    const WantBuy = ctx.params.id;
+    
+    try {
+    const CheckOrder = await strapi.db.query('api::market-place.market-place').findOne({
+      populate: ['seller','item'],
+      where: {
+        id: WantBuy,
+        seller: { $ne : info.id },
+        sell_status: 'pending'
+      },
+    });
+
+    const CurrentCoin = info.currency - CheckOrder.price;
+    if (CurrentCoin >= 0) {
+      await strapi.entityService.update(
+        "plugin::users-permissions.user",
+        info.id,
+        {
+          data : {
+            currency: CurrentCoin,
+          }
+        }
+      );
+      
+      const income = CheckOrder.seller.currency + CheckOrder.price;
+      await strapi.entityService.update(
+        "plugin::users-permissions.user",
+        CheckOrder.seller.id,
+        {
+          data: {
+            currency: income,
+          }
+        }
+      );
+
+      const ExistingItem = await strapi.db.query('api::inventory.inventory').findOne({
+        where: {
+          user: info.id,
+          item: CheckOrder.item.id
+        },
+      });
+
+      if (!ExistingItem){
+        await strapi.db.query('api::inventory.inventory').create({
+          data: {
+            item: CheckOrder.item.id,
+            stack_item: CheckOrder.amount,
+            user: info.id
+          }
+        }); 
+      } else {
+        const CurrentAmount = CheckOrder.amount + ExistingItem.stack_item;
+        await strapi.db.query('api::inventory.inventory').update({
+          where: {
+            user: info.id,
+            item: CheckOrder.item.id
+          },
+          data: {
+            stack_item: CurrentAmount
+          },
+        });
+      }
+      const now = new Date();
+      await strapi.db.query('api::market-place.market-place').update({
+        where: {
+          id: WantBuy
+        },
+        data: {
+          sell_status: 'success',
+          buyer: info.id,
+          end_date: now
+        },
+      });
+      ctx.body = {
+        message: 'Buy item successfully',
+        CurrentCurrency: info.currency,
+      }
+    }
+  }catch(err) {
+    ctx.throw(888, 'Player currency is not enough to buy this');
+    }
+  },
 };

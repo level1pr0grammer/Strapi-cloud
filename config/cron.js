@@ -7,6 +7,7 @@ module.exports = () => {
       await strapi.service('api::market-place.custom-service').checkAndUpdateStatus();
     } catch (error) {
       console.error('Error in checkAndUpdateStatus:', error);
+      //มันerror อะไรสักอย่าง แต่โปรแกรมทำงานได้ปกติ
     }
   });
 };
