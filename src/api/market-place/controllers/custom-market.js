@@ -11,84 +11,94 @@ module.exports = {
   },
   async SellItem(ctx) {
     try {
+      const info = ctx.state.user;
       const order = ctx.request.body.data;
       
-      const ItemInInventory = await strapi.db.query('api::inventory.inventory').findOne({
+      const ExistingItem = await strapi.db.query('api::item.item').findOne({
+        select: ['id','name'],
+        where: {
+          name: order.item
+        }
+      });
+  
+      const ExistingInventory = await strapi.db.query('api::inventory.inventory').findOne({
+        select: ['id','stack_item'],
+        populate: {
+          item: {
+            select: ['id']
+          },
+          user: {
+            select: ['id']
+          },
+        },
         where: { 
           stack_item: { $gte: order.amount},
-          user: order.seller,
-          item: order.item
+          user: info.id,
+          item: ExistingItem.id
         },
       });
       
-      if (!ItemInInventory) {
-        ctx.throw(888, 'Players are selling items that they do not have or that exceed the quantity they have.');
-      
-      }else {
-        const CurrentAmount = ItemInInventory.stack_item - order.amount;
-        if (CurrentAmount != 0) {
-          const CurrentInventory = await strapi.db.query('api::inventory.inventory').update({
-            where: {
-              user: order.seller,
-              item: order.item
-            },
-            data: {
-              stack_item: CurrentAmount
-            },
-          });
-          ctx.body = {
-            message: 'Inventory updated successfully',
-            marketPlace: CurrentInventory,
-          };
-
-        }else if (CurrentAmount == 0) {
-          await strapi.db.query('api::inventory.inventory').delete({
-            where: {
-              user: order.seller,
-              item: order.item
-            },
-          });
-          ctx.body = {
-            message: 'The item has been sold',
-          };
-        }else {
-          ctx.throw(888, 'Players are selling items that they do not have or that exceed the quantity they have.');
-        }
-
-        const now = new Date();
-        const CreatedOrder = await strapi.db.query('api::market-place.market-place').create({
+      const CurrentAmount = ExistingInventory.stack_item - order.amount;
+  
+      if (CurrentAmount != 0) {
+        await strapi.db.query('api::inventory.inventory').update({
+          where: {
+            id: ExistingInventory.id
+          },
           data: {
-            amount: order.amount,
-            publish_date: now,
-            seller: order.seller,
-            item: order.item,
-            price: order.price
+            stack_item: CurrentAmount
           },
         });
 
-        ctx.body = {
-          message: 'Create order successfully',
-          marketPlace: CreatedOrder,
-        };
+      }else if (CurrentAmount == 0) {
+        await strapi.db.query('api::inventory.inventory').delete({
+          where: {
+            id: ExistingInventory.id
+          },
+        });
       }
 
+      const now = new Date();
+      const CreatedOrder = await strapi.db.query('api::market-place.market-place').create({
+        data: {
+          amount: order.amount,
+          publish_date: now,
+          seller: info.id,
+          item: ExistingItem.id,
+          price: order.price
+        },
+      });
+
+      ctx.body = {
+        message: `${info.username} is selling ${CreatedOrder.amount} ea of ${ExistingItem.name} for ${CreatedOrder.price} coin`,
+      };
+    
     } catch (err) {
       ctx.throw(500, err);
     }
   },
   async BuyItem(ctx) {
-    const info = ctx.state.user;
-    const WantBuy = ctx.params.id;
-    
     try {
-    const CheckOrder = await strapi.db.query('api::market-place.market-place').findOne({
-      populate: ['seller','item'],
-      where: {
-        id: WantBuy,
-        seller: { $ne : info.id },
-        sell_status: 'pending'
-      },
-    });
+      const info = ctx.state.user;
+      const WantBuy = ctx.params.id;
+
+      const CheckOrder = await strapi.db.query('api::market-place.market-place').findOne({
+        select: ['id','price','amount','sell_status'],
+        where: {
+          id: WantBuy,
+          seller: { $ne : info.id },
+          sell_status: 'pending'
+        },
+        populate: {
+          seller: {
+            select: ['id','currency','username']
+          },
+          item: {
+            select: ['id','name']
+          },
+        }, 
+      }
+    );
 
     const CurrentCoin = info.currency - CheckOrder.price;
     if (CurrentCoin >= 0) {
@@ -101,7 +111,7 @@ module.exports = {
           }
         }
       );
-      
+
       const income = CheckOrder.seller.currency + CheckOrder.price;
       await strapi.entityService.update(
         "plugin::users-permissions.user",
@@ -114,6 +124,7 @@ module.exports = {
       );
 
       const ExistingItem = await strapi.db.query('api::inventory.inventory').findOne({
+        select: ['id','stack_item'],
         where: {
           user: info.id,
           item: CheckOrder.item.id
@@ -126,20 +137,21 @@ module.exports = {
             item: CheckOrder.item.id,
             stack_item: CheckOrder.amount,
             user: info.id
-          }
-        }); 
+          },
+        });
+
       } else {
         const CurrentAmount = CheckOrder.amount + ExistingItem.stack_item;
         await strapi.db.query('api::inventory.inventory').update({
           where: {
-            user: info.id,
-            item: CheckOrder.item.id
+            id: ExistingItem.id
           },
           data: {
             stack_item: CurrentAmount
           },
         });
-      }
+      } 
+
       const now = new Date();
       await strapi.db.query('api::market-place.market-place').update({
         where: {
@@ -152,12 +164,11 @@ module.exports = {
         },
       });
       ctx.body = {
-        message: 'Buy item successfully',
-        CurrentCurrency: info.currency,
+        message: `${info.username} bought ${CheckOrder.amount} ea of ${CheckOrder.item.name} from ${CheckOrder.seller.username} for ${CheckOrder.price} coin`,
       }
     }
   }catch(err) {
-    ctx.throw(888, 'Player currency is not enough to buy this');
+    ctx.throw(500, err);
     }
   },
 };

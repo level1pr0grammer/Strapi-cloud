@@ -1,127 +1,112 @@
 'use strict';
 
-/**
- * inventory controller
- */
-
-const { createCoreController } = require('@strapi/strapi').factories;
-
-module.exports = createCoreController('api::inventory.inventory', ({ strapi }) => ({
+module.exports = {
   async add(ctx) {
     try {
-      const { user, item, stack_item } = ctx.request.body.data;
+      const info = ctx.state.user;
+      const WantAdd = ctx.request.body.data;
 
-      // ดึงข้อมูล item จาก database ผ่าน id
       const existingItem = await strapi.db.query('api::item.item').findOne({
-        where: { id: item },
+        select: ['id'],
+        where: { 
+          name: WantAdd.item 
+        },
       });
 
-      if (!existingItem) {
-        ctx.throw(404, 'Item not found');
-      }
-
-      // ดึงข้อมูล inventory ทั้งหมดของ user
-      const showInventory = await strapi.db.query('api::inventory.inventory').findMany({
-        populate: ['item', 'user'], // populate เฉพาะ relations ที่จำเป็น
+      const existingInventory = await strapi.db.query('api::inventory.inventory').findOne({
+        select: ['id','stack_item'],
+        populate: {
+          item: {
+            select: ['id']
+          },
+          user: {
+            select: ['id']
+          },
+        },
+        where: {
+          item: existingItem.id,
+          user: info.id
+        },
       });
-
-      const existingInventory = showInventory.find(
-        (inventory) =>
-          inventory.item?.id === item && inventory.user?.id === user
-      );
 
       if (existingInventory) {
-        // อัปเดต stack_item ของ inventory ที่มีอยู่
-        const updatedStackItem = existingInventory.stack_item + stack_item;
-        const updatedInventory = await strapi.db.query('api::inventory.inventory').update({
-          where: { id: existingInventory.id },
+        const updatedStackItem = existingInventory.stack_item + WantAdd.stack_item;
+        await strapi.db.query('api::inventory.inventory').update({
+          where: { 
+            id: existingInventory.id 
+          },
           data: {
             stack_item: updatedStackItem,
           },
         });
 
-        ctx.body = {
-          message: 'Inventory updated successfully',
-          inventory: updatedInventory,
-        };
       } else {
-        // สร้าง inventory ใหม่
-        const newInventory = await strapi.db.query('api::inventory.inventory').create({
+        await strapi.db.query('api::inventory.inventory').create({
           data: {
-              user: user, // ใช้ ID ของ user
-              item: existingItem.id, // ใช้ ID ของ item
-              stack_item: stack_item,
+              user: info.id, 
+              item: existingItem.id, 
+              stack_item: WantAdd.stack_item,
           },
         });
-
-        ctx.body = {
-          message: 'New inventory created successfully',
-          inventory: newInventory,
-        };
       }
+      ctx.body = {
+        message: `${info.username} received ${WantAdd.stack_item} ea of ${WantAdd.item}`,
+    };
     } catch (err) {
       ctx.throw(500, err);
     }
   },
   async remove(ctx) {
     try {
-        const { user, item, stack_item } = ctx.request.body.data;
+        const info = ctx.state.user;
+        const WantRemove = ctx.request.body.data;
   
-        // หา item ใน database ผ่าน id
         const existingItem = await strapi.db.query('api::item.item').findOne({
-          where: { id: item }, //หาว่ามี item_id ที่ตรงกับ itemที่จะใส่หรือไม่
+          select: ['id'],
+          where: { 
+            name: WantRemove.item 
+          }, 
         });
-  
-        if (!existingItem) {
-          ctx.throw(404, 'Item not found');
-        }
-  
-        // ดึงข้อมูล inventory ทั้งหมดของ user
-        const showInventory = await strapi.db.query('api::inventory.inventory').findMany({
-          populate: ['item', 'user'], 
+
+        const existingInventory = await strapi.db.query('api::inventory.inventory').findOne({
+          select: ['id','stack_item'],
+          populate: {
+            item: {
+              select: ['id']
+            },
+            user: {
+              select: ['id']
+            },
+          },
+          where: {
+            item: existingItem.id,
+            user: info.id
+          },
         });
-  
-        const existingInventory = showInventory.find(
-          (inventory) =>
-            inventory.item?.id === item && inventory.user?.id === user
-        );
-        const remain = existingInventory.stack_item - stack_item
 
-        if (remain < 0) {
-            ctx.throw(160, 'negative fact');
-        }
-
+        const remain = existingInventory.stack_item - WantRemove.stack_item
         if (remain >= 1) {
-          // อัปเดต stack_item ของ inventory ที่มีอยู่
-          const updatedStackItem = existingInventory.stack_item - stack_item;
-          const updatedInventory = await strapi.db.query('api::inventory.inventory').update({
-            where: { id: existingInventory.id },
+          await strapi.db.query('api::inventory.inventory').update({
+            where: { 
+              id: existingInventory.id 
+            },
             data: {
-              stack_item: updatedStackItem,
+              stack_item: remain,
             },
           });
-  
-          ctx.body = {
-            message: 'Inventory updated successfully',
-            inventory: updatedInventory,
-          };
-        } else {
-          // ลบ inventory
-          const RemoveInventory = await strapi.db.query('api::inventory.inventory').delete({
+
+        } else if (remain == 0) {
+          await strapi.db.query('api::inventory.inventory').delete({
             where: {
-                user: user, // ใช้ ID ของ user
-                item: existingItem.id, // ใช้ ID ของ item
-                stack_item: stack_item,
+                id: existingInventory.id
             },
           });
-  
-          ctx.body = {
-            message: 'Remove inventory successfully',
-            inventory: RemoveInventory,
-          };
         } 
+        ctx.body = {
+          message: `${info.username} took out ${WantRemove.stack_item} ea of ${WantRemove.item} from the bag`,
+        };
     } catch (err){
         ctx.throw(500, err);
     }
   }
-}));
+};
