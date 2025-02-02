@@ -202,7 +202,23 @@ module.exports = {
   },
   async load(ctx) {
     try {
+      const info = await strapi.entityService.findOne(
+        "plugin::users-permissions.user", 
+        ctx.state.user.id,{
+        select: ['id','currency'],  
+        populate: {
+          inventories: {
+            fields: ['id','stack_item'],
+            populate: {
+              item: {
+                fields: ['id','name','description','type']
+              },
+            },
+          },
+        },
+      });
       
+      ctx.send(info);
     } catch (error) {
       ctx.throw(500, error);
     }

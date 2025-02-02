@@ -18,7 +18,7 @@ module.exports = {
       handler: "custom-inventory.save"
     },
     {
-      method: "POST",
+      method: "GET",
       path: "/load",
       handler: "custom-inventory.load"
     },
