@@ -17,16 +17,16 @@
       "min": 1,
       "default": 1
     },
-    "user": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "inventories"
-    },
     "item": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::item.item",
+      "inversedBy": "inventories"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
       "inversedBy": "inventories"
     }
   }

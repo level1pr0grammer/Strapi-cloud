@@ -5,12 +5,22 @@ module.exports = {
     {
       method: "POST",
       path: "/inventories/add",
-      handler: "add.add",
+      handler: "custom-inventory.add",
     },
     {
       method: "POST",
       path: "/inventories/remove",
-      handler: "add.remove"
+      handler: "custom-inventory.remove"
+    },
+    {
+      method: "POST",
+      path: "/save",
+      handler: "custom-inventory.save"
+    },
+    {
+      method: "POST",
+      path: "/load",
+      handler: "custom-inventory.load"
     },
   ],
 };

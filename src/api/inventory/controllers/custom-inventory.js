@@ -108,5 +108,103 @@ module.exports = {
     } catch (err){
         ctx.throw(500, err);
     }
+  },
+  async save(ctx) {
+    try {
+      const info = await strapi.entityService.findOne(
+        "plugin::users-permissions.user", 
+        ctx.state.user.id,{
+        select: ['id','username','currency'],  
+        populate: {
+          inventories: {
+            fields: ['id','stack_item'],
+            populate: {
+              item: {
+                fields: ['id','name']
+              },
+            },
+          },
+        },
+      });
+      const WantSave = ctx.request.body.data;
+
+      const PastAmountItem = info.inventories.length;
+      const CurrentItemName = WantSave.inventory.name; // list item name in current
+      const CurrentAmountItem = CurrentItemName.length;  
+      const StackItem = WantSave.inventory.stack_item; // list stack in current
+
+      if (CurrentAmountItem == StackItem.length) {
+        for (let i = 0; i < PastAmountItem; i++) {
+          let isHas = false;
+          for (let j = 0; j < CurrentAmountItem; j++) {
+            isHas = info.inventories[i].item.name == CurrentItemName[j];
+            if (isHas) { break; }
+          }
+          if (!isHas) {
+            await strapi.db.query('api::inventory.inventory').delete({
+              where: {
+                id: info.inventories[i].id
+              }
+            });
+          }
+        }
+        for (let i = 0; i < CurrentAmountItem; i++) {
+          const ExistingItem = await strapi.db.query('api::item.item').findOne({
+            select: ['id','name'],
+            where: {
+              name: CurrentItemName[i]
+            },
+          });
+
+          let HaveItem = false; 
+          for (let j = 0; j < PastAmountItem; j++) {
+            HaveItem = info.inventories[j].item.name == ExistingItem.name;
+            if (HaveItem) {
+              break;
+            }
+          }
+          
+          const CurrentStack = StackItem[i];
+          if (!HaveItem) {
+            await strapi.db.query('api::inventory.inventory').create({
+              data: {
+                stack_item: CurrentStack,
+                item: ExistingItem.id,
+                user: info.id
+              },
+            });
+          }else {
+            await strapi.db.query('api::inventory.inventory').update({
+              where: {
+                user: info.id,
+                item: ExistingItem.id
+              },
+              data: {
+                stack_item: CurrentStack
+              }
+            });
+          } 
+        }
+        await strapi.entityService.update(
+          "plugin::users-permissions.user", 
+          info.id,{
+          data: {
+            currency: WantSave.currency
+          }
+        });
+      }
+      ctx.body = {
+        message:`game save successfully`
+      }
+    } catch (error) {
+      ctx.throw(500, error);
+    }
+  },
+  async load(ctx) {
+    try {
+      
+    } catch (error) {
+      ctx.throw(500, error);
+    }
   }
 };
