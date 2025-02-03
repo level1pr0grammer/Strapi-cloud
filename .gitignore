@@ -129,9 +129,3 @@ dist
 build
 .strapi-updater.json
 .strapi-cloud.json
-secret.yaml
-003-secrets.yaml
-namespace.yaml
-strapi-config.yaml
-strapi-service.yaml
-strapi-statefulset.yaml

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: strapi
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: strapi
+    spec:
+      containers:
+      - name: strapi
+        image: gcr.io/cloud-project-448820/merchant-cloud-server:latest
+        ports:
+        - containerPort: 1337
+        env:
+        - name: DATABASE_CLIENT
+          value: "postgres" 
+        - name: DATABASE_HOST
+          value: "10.178.240.3"  
+        - name: DATABASE_NAME
+          value: "postgres"
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: db_user
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: db_password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: strapi-service
+spec:
+  selector:
+    app: strapi
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 1337
+  type: LoadBalancer
