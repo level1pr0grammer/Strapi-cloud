@@ -11,7 +11,7 @@ COPY package.json package-lock.json ./
 RUN npm install --omit=dev
 
 RUN npm install node-cron
-
+RUN npm install pg --save
 RUN npm run build
 
 # คัดลอกโค้ดทั้งหมดไปยัง container
