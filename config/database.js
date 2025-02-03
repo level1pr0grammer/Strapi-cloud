@@ -1,6 +1,6 @@
 module.exports = ({ env }) => ({
   connection: {
-    client: 'postgres',
+    client: 'sqlite',
     connection: {
       filename: env('DATABASE_FILENAME', '.tmp/data.db'),
     },
