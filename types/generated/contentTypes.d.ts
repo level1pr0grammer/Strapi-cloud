@@ -497,12 +497,12 @@ export interface ApiMarketPlaceMarketPlace extends Struct.CollectionTypeSchema {
       Schema.Attribute.DefaultTo<0>;
     publish_date: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
-    sell_status: Schema.Attribute.Enumeration<['pending', 'success', 'fail']> &
-      Schema.Attribute.DefaultTo<'pending'>;
     seller: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.user'
     >;
+    sell_status: Schema.Attribute.Enumeration<['pending', 'success', 'fail']> &
+      Schema.Attribute.DefaultTo<'pending'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
