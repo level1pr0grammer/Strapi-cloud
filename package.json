@@ -1,5 +1,5 @@
 {
-  "name": "Strapi-cloud",
+  "name": "cloud-strapi",
   "version": "0.1.0",
   "private": true,
   "description": "A Strapi application",
@@ -11,21 +11,21 @@
     "strapi": "strapi"
   },
   "dependencies": {
-    "@strapi/plugin-cloud": "^4.25.20",
-    "@strapi/plugin-users-permissions": "^4.25.20",
-    "@strapi/strapi": "^4.25.20",
+    "@strapi/plugin-cloud": "5.8.1",
+    "@strapi/plugin-users-permissions": "5.8.1",
+    "@strapi/strapi": "5.8.1",
     "better-sqlite3": "11.3.0",
-    "node-cron": "^3.0.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
     "styled-components": "^6.0.0"
   },
+  "devDependencies": {},
   "engines": {
     "node": ">=18.0.0 <=22.x.x",
     "npm": ">=6.0.0"
   },
   "strapi": {
-    "uuid": "953a06fe-b8d0-46f1-a10c-4e21e00a704d"
+    "uuid": "efad11f8-31cb-4646-a56a-490e5663fc47"
   }
 }
