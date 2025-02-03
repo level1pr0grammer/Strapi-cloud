@@ -11,16 +11,16 @@
     "strapi": "strapi"
   },
   "dependencies": {
-    "@strapi/plugin-cloud": "5.9.0",
-    "@strapi/plugin-users-permissions": "5.9.0",
-    "@strapi/strapi": "5.9.0",
+    "@strapi/plugin-cloud": "^4.25.20",
+    "@strapi/plugin-users-permissions": "^4.25.20",
+    "@strapi/strapi": "^4.25.20",
     "better-sqlite3": "11.3.0",
+    "node-cron": "^3.0.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
     "styled-components": "^6.0.0"
   },
-  "devDependencies": {},
   "engines": {
     "node": ">=18.0.0 <=22.x.x",
     "npm": ">=6.0.0"
