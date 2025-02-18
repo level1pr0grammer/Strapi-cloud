@@ -81,94 +81,93 @@ module.exports = {
     try {
       const info = ctx.state.user;
       const WantBuy = ctx.params.id;
-
+  
       const CheckOrder = await strapi.db.query('api::market-place.market-place').findOne({
-        select: ['id','price','amount','sell_status'],
+        select: ['id', 'price', 'amount', 'sell_status'],
         where: {
-          id: WantBuy,
-          seller: { $ne : info.id },
+          documentId: WantBuy,
+          seller: { $ne: info.id },
           sell_status: 'pending'
         },
         populate: {
           seller: {
-            select: ['id','currency','username']
+            select: ['id', 'currency', 'username']
           },
           item: {
-            select: ['id','name']
+            select: ['id', 'name']
           },
-        }, 
-      }
-    );
-
-    const CurrentCoin = info.currency - CheckOrder.price;
-    if (CurrentCoin >= 0) {
-      await strapi.entityService.update(
-        "plugin::users-permissions.user",
-        info.id,
-        {
-          data : {
-            currency: CurrentCoin,
-          }
-        }
-      );
-
-      const income = CheckOrder.seller.currency + CheckOrder.price;
-      await strapi.entityService.update(
-        "plugin::users-permissions.user",
-        CheckOrder.seller.id,
-        {
-          data: {
-            currency: income,
-          }
-        }
-      );
-
-      const ExistingItem = await strapi.db.query('api::inventory.inventory').findOne({
-        select: ['id','stack_item'],
-        where: {
-          user: info.id,
-          item: CheckOrder.item.id
         },
       });
-
-      if (!ExistingItem){
-        await strapi.db.query('api::inventory.inventory').create({
-          data: {
-            item: CheckOrder.item.id,
-            stack_item: CheckOrder.amount,
-            user: info.id
-          },
-        });
-
-      } else {
-        const CurrentAmount = CheckOrder.amount + ExistingItem.stack_item;
-        await strapi.db.query('api::inventory.inventory').update({
+  
+      const CurrentCoin = info.currency - CheckOrder.price;
+      if (CurrentCoin >= 0) {
+        await strapi.entityService.update(
+          "plugin::users-permissions.user",
+          info.id,
+          {
+            data: {
+              currency: CurrentCoin,
+            }
+          }
+        );
+  
+        const income = CheckOrder.seller.currency + CheckOrder.price;
+        await strapi.entityService.update(
+          "plugin::users-permissions.user",
+          CheckOrder.seller.id,
+          {
+            data: {
+              currency: income,
+            }
+          }
+        );
+  
+        const ExistingItem = await strapi.db.query('api::inventory.inventory').findOne({
+          select: ['id', 'stack_item'],
           where: {
-            id: ExistingItem.id
-          },
-          data: {
-            stack_item: CurrentAmount
+            user: info.id,
+            item: CheckOrder.item.id
           },
         });
-      } 
-
-      const now = new Date();
-      await strapi.db.query('api::market-place.market-place').update({
-        where: {
-          id: WantBuy
-        },
-        data: {
-          sell_status: 'success',
-          buyer: info.id,
-          end_date: now
-        },
-      });
-      ctx.body = {
-        message: `${info.username} bought ${CheckOrder.amount} ea of ${CheckOrder.item.name} from ${CheckOrder.seller.username} for ${CheckOrder.price} coin`,
+  
+        if (!ExistingItem) {
+          await strapi.db.query('api::inventory.inventory').create({
+            data: {
+              item: CheckOrder.item.id,
+              stack_item: CheckOrder.amount,
+              user: info.id
+            },
+          });
+        } else {
+          const CurrentAmount = CheckOrder.amount + ExistingItem.stack_item;
+          await strapi.db.query('api::inventory.inventory').update({
+            where: {
+              id: ExistingItem.id
+            },
+            data: {
+              stack_item: CurrentAmount
+            },
+          });
+        }
+  
+        const now = new Date();
+        await strapi.db.query('api::market-place.market-place').update({
+          where: {
+            documentId: WantBuy
+          },
+          data: {
+            sell_status: 'success',
+            buyer: info.id,
+            end_date: now
+          },
+        });
+  
+        ctx.body = {
+          message: `${info.username} bought ${CheckOrder.amount} ea of ${CheckOrder.item.name} from ${CheckOrder.seller.username} for ${CheckOrder.price} coin`,
+        }
       }
+    } catch (err) {
+      ctx.throw(500, err);
     }
-  }catch(err) {
-    ctx.throw(500, err);
-    }
-  },
-};
+  }
+}  
