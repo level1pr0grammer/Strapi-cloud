@@ -211,7 +211,7 @@ module.exports = {
             fields: ['id','stack_item'],
             populate: {
               item: {
-                fields: ['id','name','description','type']
+                fields: ['id','name','type']
               },
             },
           },
