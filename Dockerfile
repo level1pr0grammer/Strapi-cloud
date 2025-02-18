@@ -18,7 +18,7 @@ RUN npm run build
 COPY . .
 
 # กำหนดพอร์ตที่ใช้
-EXPOSE 1337
+EXPOSE 80
 
 # คำสั่งสำหรับรัน Strapi
 CMD ["npm", "start"]
