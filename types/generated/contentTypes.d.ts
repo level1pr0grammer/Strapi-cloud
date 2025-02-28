@@ -496,12 +496,12 @@ export interface ApiMarketPlaceMarketPlace extends Struct.CollectionTypeSchema {
       Schema.Attribute.DefaultTo<0>;
     publish_date: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
+    sell_status: Schema.Attribute.Enumeration<['pending', 'success', 'fail']> &
+      Schema.Attribute.DefaultTo<'pending'>;
     seller: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.user'
     >;
-    sell_status: Schema.Attribute.Enumeration<['pending', 'success', 'fail']> &
-      Schema.Attribute.DefaultTo<'pending'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -998,6 +998,14 @@ export interface PluginUsersPermissionsUser
       'plugin::users-permissions.user'
     > &
       Schema.Attribute.Private;
+    mail_box: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
     password: Schema.Attribute.Password &
       Schema.Attribute.Private &
       Schema.Attribute.SetMinMaxLength<{
@@ -1014,7 +1022,6 @@ export interface PluginUsersPermissionsUser
       'oneToMany',
       'api::market-place.market-place'
     >;
-    UID: Schema.Attribute.String & Schema.Attribute.Unique;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

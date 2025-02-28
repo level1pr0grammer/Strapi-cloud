@@ -77,13 +77,14 @@ module.exports = {
       ctx.throw(500, err);
     }
   },
+
   async BuyItem(ctx) {
     try {
       const info = ctx.state.user;
       const WantBuy = ctx.params.id;
-  
+      
       const CheckOrder = await strapi.db.query('api::market-place.market-place').findOne({
-        select: ['id', 'price', 'amount', 'sell_status'],
+        select: ['id', 'price', 'amount', 'sell_status', 'documentId'],
         where: {
           documentId: WantBuy,
           seller: { $ne: info.id },
@@ -91,14 +92,14 @@ module.exports = {
         },
         populate: {
           seller: {
-            select: ['id', 'currency', 'username']
+            select: ['id', 'currency', 'username', 'mail_box']
           },
           item: {
             select: ['id', 'name']
           },
         },
       });
-  
+
       const CurrentCoin = info.currency - CheckOrder.price;
       if (CurrentCoin >= 0) {
         await strapi.entityService.update(
@@ -110,14 +111,14 @@ module.exports = {
             }
           }
         );
-  
-        const income = CheckOrder.seller.currency + CheckOrder.price;
+
+        const income = CheckOrder.seller.mail_box + CheckOrder.price;
         await strapi.entityService.update(
           "plugin::users-permissions.user",
           CheckOrder.seller.id,
           {
             data: {
-              currency: income,
+              mail_box: income,
             }
           }
         );

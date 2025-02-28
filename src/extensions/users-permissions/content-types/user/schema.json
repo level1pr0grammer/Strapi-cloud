@@ -88,9 +88,10 @@
       "target": "api::inventory.inventory",
       "mappedBy": "user"
     },
-    "UID": {
-      "type": "string",
-      "unique": true
+    "mail_box": {
+      "type": "integer",
+      "min": 0,
+      "default": 0
     }
   }
 }
