@@ -22,5 +22,10 @@ module.exports = {
       path: "/load",
       handler: "custom-inventory.load"
     },
+    {
+      method: "GET",
+      path: "/currency",
+      handler: "custom-inventory.currencyupdate"
+    },
   ],
 };

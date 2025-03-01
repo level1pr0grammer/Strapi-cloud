@@ -222,5 +222,41 @@ module.exports = {
     } catch (error) {
       ctx.throw(500, error);
     }
-  }
+  },
+  async currencyupdate(ctx) {
+    try {
+      await strapi.db.transaction(async (transaction) => {
+        const info = await strapi.db.query('plugin::users-permissions.user').findOne({
+          where: { id: ctx.state.user.id },
+          select: ['id', 'currency', 'mail_box'],
+          transaction,
+        });
+  
+        if (!info) {
+          throw new Error('User not found');
+        }
+  
+        const CurrentCoin = info.currency + info.mail_box;
+  
+        const {patch} = await strapi.db.query('plugin::users-permissions.user').update({
+          where: { id: ctx.state.user.id, mail_box: info.mail_box},
+          data: {
+            currency: CurrentCoin,
+            mail_box: 0,
+          },
+          transaction,
+        });
+        
+        if (patch === 0){
+          throw new Error('mail_box conflict: try again!');
+        } 
+
+        ctx.body = {
+          message: `currency is ${CurrentCoin}`
+        };
+      });
+    } catch (error) {
+      ctx.throw(500, error);
+    }
+  },
 };
