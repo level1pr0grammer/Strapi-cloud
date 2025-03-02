@@ -11,10 +11,21 @@ steps:
       - '--project'
       - 'cloud-project-448820'
 
-  # ลบ Deployment เก่า
+  # ตรวจสอบว่า Cluster มีการเชื่อมต่อเรียบร้อย
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
-      - 'kubectl'
+      - 'container'
+      - 'clusters'
+      - 'describe'
+      - 'autopilot-strapi'
+      - '--region'
+      - 'asia-southeast1'
+      - '--project'
+      - 'cloud-project-448820'
+      
+  # ลบ Deployment เก่า
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
       - 'delete'
       - 'deployment'
       - 'strapi-deploy'
@@ -22,22 +33,21 @@ steps:
       - 'strapi'
 
   # สร้าง Deployment ใหม่
-  - name: 'gcr.io/cloud-builders/gcloud'
+  - name: 'gcr.io/cloud-builders/kubectl'
     args:
-      - 'kubectl'
       - 'apply'
       - '-f'
       - 'deployment.yaml'
 
   # ตรวจสอบสถานะ Deployment
-  - name: 'gcr.io/cloud-builders/gcloud'
+  - name: 'gcr.io/cloud-builders/kubectl'
     args:
-      - 'kubectl'
       - 'rollout'
       - 'status'
       - 'deployment/strapi-deploy'
       - '-n'
       - 'strapi'
+
       
 options:
   logging: "NONE"
