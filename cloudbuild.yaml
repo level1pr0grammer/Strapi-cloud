@@ -10,29 +10,30 @@ steps:
       - '--project=cloud-project-448820'
 
   # ลบ Deployment เก่า
-  - name: 'gcr.io/cloud-builders/kubectl'
+  - name: 'gcr.io/cloud-builders/gcloud'
     args:
-      - 'delete'
-      - 'deployment'
+      - 'container'
+      - 'clusters'
+      - 'delete-deployment'
       - 'strapi-deploy'
-      - '-n'
-      - 'strapi'
+      - '--namespace=strapi'
 
   # สร้าง Deployment ใหม่
-  - name: 'gcr.io/cloud-builders/kubectl'
+  - name: 'gcr.io/cloud-builders/gcloud'
     args:
+      - 'container'
       - 'apply'
       - '-f'
       - 'deployment.yaml'
 
   # ตรวจสอบสถานะ Deployment
-  - name: 'gcr.io/cloud-builders/kubectl'
+  - name: 'gcr.io/cloud-builders/gcloud'
     args:
+      - 'container'
       - 'rollout'
       - 'status'
       - 'deployment/strapi-deploy'
-      - '-n'
-      - 'strapi'
-      
+      - '--namespace=strapi'
+
 options:
   logging: "NONE"
