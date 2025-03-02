@@ -31,3 +31,6 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
+      
+options:
+  logging: "NONE"
