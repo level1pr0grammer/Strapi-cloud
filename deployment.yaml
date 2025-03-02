@@ -1,0 +1,43 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "strapi-deploy"
+  namespace: "strapi"
+  labels:
+    app: "strapi"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: "strapi"
+  template:
+    metadata:
+      labels:
+        app: "strapi"
+    spec:
+      containers:
+      - name: "strapi"
+        image: "us-docker.pkg.dev/cloud-project-448820/gcr.io/strapi:lastest"
+---
+apiVersion: "autoscaling/v2"
+kind: "HorizontalPodAutoscaler"
+metadata:
+  name: "strapi-deploy-hpa-ruyv"
+  namespace: "strapi"
+  labels:
+    app: "strapi"
+spec:
+  scaleTargetRef:
+    kind: "Deployment"
+    name: "strapi-deploy"
+    apiVersion: "apps/v1"
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: "Resource"
+    resource:
+      name: "cpu"
+      target:
+        type: "Utilization"
+        averageUtilization: 80
