@@ -7,24 +7,41 @@ steps:
       - 'get-credentials'
       - 'autopilot-strapi'
       - '--region'
-      - 'asia-southeast1'
       - '--project'
       - 'cloud-project-448820'
+
+  # Build Docker Image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/cloud-project-448820/strapi:latest'
+      - '.'
+
+  # Push Docker Image ไปยัง GCR
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/cloud-project-448820/strapi:latest'
 
   # ลบ Deployment เก่า
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'container'
       - 'clusters'
-      - 'delete-deployment'
+      - 'kubectl'
+      - 'delete'
+      - 'deployment'
       - 'strapi-deploy'
-      - '--namespace'
+      - '-n'
       - 'strapi'
 
   # สร้าง Deployment ใหม่
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'container'
+      - 'clusters'
+      - 'kubectl'
       - 'apply'
       - '-f'
       - 'deployment.yaml'
@@ -33,11 +50,10 @@ steps:
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'container'
+      - 'clusters'
+      - 'kubectl'
       - 'rollout'
       - 'status'
       - 'deployment/strapi-deploy'
-      - '--namespace'
+      - '-n'
       - 'strapi'
-      
-options:
-  logging: "NONE"
