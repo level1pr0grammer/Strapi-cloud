@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: "strapi"
-        image: "us-docker.pkg.dev/cloud-project-448820/gcr.io/strapi:lastest"
+        image: "gcr.io/cloud-project-448820/strapi:latest"
 ---
 apiVersion: "autoscaling/v2"
 kind: "HorizontalPodAutoscaler"

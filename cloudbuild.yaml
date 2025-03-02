@@ -1,0 +1,20 @@
+steps:
+# ใช้คำสั่ง gcloud เพื่อทำการเชื่อมต่อกับ GKE Cluster
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+    - 'container'
+    - 'clusters'
+    - 'get-credentials'
+    - 'autopilot-strapi'
+    - '--zone=asia-southeast1-a'
+
+# ใช้ kubectl เพื่อตั้งค่า image ใน Deployment ของ Kubernetes
+- name: 'gcr.io/cloud-builders/kubectl'
+  args:
+    - 'set'
+    - 'image'
+    - 'deployment/strapi-deploy'
+    - 'strapi=gcr.io/cloud-project-448820/strapi:latest'
+  env:
+    - 'CLOUDSDK_COMPUTE_ZONE=asia-southeast1-a'
+    - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
