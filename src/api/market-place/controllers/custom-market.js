@@ -86,20 +86,20 @@ module.exports = {
       const CheckOrder = await strapi.db.query('api::market-place.market-place').findOne({
         select: ['id', 'price', 'amount', 'sell_status', 'documentId'],
         where: {
-          documentId: WantBuy,
+          id: WantBuy,
           seller: { $ne: info.id },
           sell_status: 'pending'
         },
         populate: {
           seller: {
-            select: ['id', 'currency', 'username', 'mail_box']
+            select: ['id', 'currency', 'username', 'mail_box', 'documentId']
           },
           item: {
-            select: ['id', 'name']
+            select: ['id', 'name', 'documentId']
           },
         },
       });
-
+      console.log(CheckOrder);
       const CurrentCoin = info.currency - CheckOrder.price;
       if (CurrentCoin >= 0) {
         await strapi.entityService.update(

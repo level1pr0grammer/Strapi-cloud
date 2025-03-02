@@ -103,7 +103,7 @@ module.exports = {
           });
         } 
         ctx.body = {
-          message: `${info.username} took out ${WantRemove.stack_item} ea of ${WantRemove.item} from the bag`,
+          message: `${info.username} took out ${WantRemove.stack_item} ea of ${WantRemove.item} from the bag`
         };
     } catch (err){
         ctx.throw(500, err);
@@ -252,7 +252,8 @@ module.exports = {
         } 
 
         ctx.body = {
-          message: `currency is ${CurrentCoin}`
+          message: `currency is ${CurrentCoin}`,
+          currency: `${CurrentCoin}`
         };
       });
     } catch (error) {
