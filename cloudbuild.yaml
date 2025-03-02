@@ -57,3 +57,6 @@ steps:
       - 'deployment/strapi-deploy'
       - '-n'
       - 'strapi'
+      
+options:
+  logging: "NONE"
