@@ -16,7 +16,7 @@ steps:
       - 'deployment/strapi-deploy'
       - 'strapi=gcr.io/cloud-project-448820/strapi:latest'
     env:
-      - 'CLOUDSDK_COMPUTE_ZONE=asia-southeast1-a'
+      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
 
   # Deploy ขึ้น Kubernetes โดยใช้ไฟล์ deployment.yaml
