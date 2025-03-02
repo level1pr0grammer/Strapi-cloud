@@ -33,6 +33,9 @@ steps:
       - 'strapi-deploy'
       - '-n'
       - 'strapi'
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
 
   # สร้าง Deployment ใหม่
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -40,7 +43,9 @@ steps:
       - 'apply'
       - '-f'
       - 'deployment.yaml'
-
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
   # ตรวจสอบสถานะ Deployment
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
@@ -49,6 +54,9 @@ steps:
       - 'deployment/strapi-deploy'
       - '-n'
       - 'strapi'
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
       
 options:
   logging: "NONE"
