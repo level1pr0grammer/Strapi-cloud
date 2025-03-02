@@ -12,18 +12,18 @@ steps:
       - 'cloud-project-448820'
 
   # Build Docker Image
-#  - name: 'gcr.io/cloud-builders/docker'
-#    args:
-#      - 'build'
-#      - '-t'
-#      - 'gcr.io/cloud-project-448820/strapi:latest'
-#      - '.'
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/cloud-project-448820/strapi:latest'
+      - '.'
 
   # Push Docker Image ไปยัง GCR
-#  - name: 'gcr.io/cloud-builders/docker'
-#    args:
-#      - 'push'
-#      - 'gcr.io/cloud-project-448820/strapi:latest'
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/cloud-project-448820/strapi:latest'
 
   # ลบ Deployment เก่า
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -57,6 +57,6 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
-      
+
 options:
   logging: "NONE"
