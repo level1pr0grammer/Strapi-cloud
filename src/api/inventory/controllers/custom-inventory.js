@@ -253,7 +253,7 @@ module.exports = {
 
         ctx.body = {
           message: `currency is ${CurrentCoin}`,
-          currency: `${CurrentCoin}`
+          currency: CurrentCoin
         };
       });
     } catch (error) {
