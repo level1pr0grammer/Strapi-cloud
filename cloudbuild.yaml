@@ -29,3 +29,4 @@ steps:
       
 options:
   logging: "NONE"
+  service_account: 'projects/cloud-project-448820/serviceAccounts/473454797760-compute@developer.gserviceaccount.com'
