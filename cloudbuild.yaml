@@ -9,6 +9,14 @@ steps:
       - '--region=asia-southeast1'
       - '--project=cloud-project-448820'
 
+  # ตรวจสอบการเชื่อมต่อกับ GKE Cluster
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'cluster-info'
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
+
   # อัปเดต Image ใน Deployment
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
@@ -31,6 +39,7 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
+
       
 options:
   logging: "NONE"
