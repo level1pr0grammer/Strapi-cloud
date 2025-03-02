@@ -8,14 +8,16 @@ steps:
       - 'autopilot-strapi'
       - '--region=asia-southeast1'
 
-  # ใช้ kubectl เพื่อเชื่อมต่อกับ GKE
+  # ใช้ kubectl เพื่อตั้งค่า image ใน Deployment ของ Kubernetes
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
-      - 'config'
-      - 'use-context'
-      - 'gke_cloud-project-448820_asia-southeast1_autopilot-strapi'
-    id: "Set kubectl context"
-
+      - 'set'
+      - 'image'
+      - 'deployment/strapi-deploy'
+      - 'strapi=gcr.io/cloud-project-448820/strapi:latest'
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
 
   # Deploy ขึ้น Kubernetes โดยใช้ไฟล์ deployment.yaml
   - name: 'gcr.io/cloud-builders/gcloud'
