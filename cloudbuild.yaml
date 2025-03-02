@@ -6,7 +6,7 @@ steps:
       - 'clusters'
       - 'get-credentials'
       - 'autopilot-strapi'
-      - '--zone=asia-southeast1-a'
+      - '--region=asia-southeast1'
 
   # ใช้ kubectl เพื่อตั้งค่า image ใน Deployment ของ Kubernetes
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -16,7 +16,7 @@ steps:
       - 'deployment/strapi-deploy'
       - 'strapi=gcr.io/cloud-project-448820/strapi:latest'
     env:
-      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
+      - 'CLOUDSDK_COMPUTE_ZONE=asia-southeast1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
 
   # Deploy ขึ้น Kubernetes โดยใช้ไฟล์ deployment.yaml
