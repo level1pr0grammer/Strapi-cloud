@@ -27,4 +27,5 @@ steps:
       - '--file'
       - 'deployment.yaml'
       
-# **Service Account** และ **Logging** ควรตั้งค่าใน Cloud Build Trigger แทน
+options:
+  logging: "NONE"
