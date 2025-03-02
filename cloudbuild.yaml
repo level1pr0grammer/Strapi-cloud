@@ -18,3 +18,12 @@ steps:
   env:
     - 'CLOUDSDK_COMPUTE_ZONE=asia-southeast1-a'
     - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
+
+  steps:
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['deploy', 'apply', '--file', 'deployment.yaml']
+
+  options:
+    logging: CLOUD_LOGGING_ONLY
+    service_account: 'projects/cloud-project-448820/serviceAccounts/473454797760-compute@developer.gserviceaccount.com'
+
