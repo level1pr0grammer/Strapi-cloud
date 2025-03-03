@@ -11,6 +11,7 @@ steps:
       - '--project'
       - 'cloud-project-448820'
 
+  # Retrieve .env from Google Secret Manager
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
@@ -26,7 +27,7 @@ steps:
       - 'gcr.io/cloud-project-448820/strapi:latest'
       - '.'
 
-  # Push Docker Image to GCR
+  # Push Docker Image to Google Container Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
@@ -45,7 +46,7 @@ steps:
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
     allowFailure: true  # If this step fails, continue to the next step
 
-  # Create new Deployment
+  # Create new Deployment with updated Docker Image
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
       - 'apply'
@@ -66,9 +67,8 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
-      
 
-     # Update the service to use the correct selector
+  # Update the service to use the correct selector
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
       - 'patch'
@@ -84,9 +84,19 @@ steps:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
 
+  # Use MY_SECRET_ENV in the deployment process
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'set'
+      - 'env'
+      - 'deployment/strapi-deploy'
+      - 'MY_SECRET_ENV=$(MY_SECRET_ENV)'
+    env:
+      - 'MY_SECRET_ENV=projects/cloud-project-448820/secrets/STRAPI_ENV/versions/latest'
+
 availableSecrets:
   secretManager:
-    - versionName: projects/cloud-project-448820/secrets/my-env/versions/latest
+    - versionName: projects/cloud-project-448820/secrets/STRAPI_ENV/versions/latest
       env: 'MY_SECRET_ENV'
 
 options:
