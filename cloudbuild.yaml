@@ -69,11 +69,6 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
-      
-availableSecrets:
-  secretManager:
-    - versionName: projects/cloud-project-448820/secrets/my-env/versions/latest
-      env: 'MY_SECRET_ENV'
 
 options:
   logging: "NONE"
