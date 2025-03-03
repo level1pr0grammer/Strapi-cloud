@@ -1,5 +1,5 @@
 steps:
-  # เชื่อมต่อกับ GKE Cluster
+  # Connect to GKE Cluster
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'container'
@@ -11,7 +11,7 @@ steps:
       - '--project'
       - 'cloud-project-448820'
 
-  # ดึงค่า Secret ไปเป็นไฟล์ .env
+  # Fetch Secret and save as .env file
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
@@ -19,7 +19,7 @@ steps:
       - |
         gcloud secrets versions access latest --secret=my-env > .env
 
-  # Build Docker Image โดยใช้ .env
+  # Build Docker Image using .env
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
@@ -29,13 +29,13 @@ steps:
       - 'ENV_FILE=.env'
       - '.'
 
-  # Push Docker Image ไปยัง GCR
+  # Push Docker Image to GCR
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
       - 'gcr.io/cloud-project-448820/strapi:latest'
 
-  # ลบ Deployment เก่า (ถ้าล้มเหลว ให้ข้ามไป)
+  # Delete old Deployment (if fails, continue)
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
       - 'delete'
@@ -46,9 +46,9 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
-    allowFailure: true  # ถ้าขั้นตอนนี้ล้มเหลว ให้ข้ามไปต่อได้
+    allowFailure: true  # If this step fails, continue to the next step
 
-  # สร้าง Deployment ใหม่
+  # Create new Deployment
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
       - 'apply'
@@ -58,7 +58,7 @@ steps:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
 
-  # ตรวจสอบสถานะ Deployment
+  # Check Deployment status
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
       - 'rollout'
@@ -70,9 +70,10 @@ steps:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
       
-secrets:
-  - secretEnv:
-      MY_SECRET_ENV: my-env
+availableSecrets:
+  secretManager:
+    - versionName: projects/cloud-project-448820/secrets/my-env/versions/latest
+      env: 'MY_SECRET_ENV'
 
 options:
   logging: "NONE"
