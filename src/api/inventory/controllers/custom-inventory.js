@@ -185,12 +185,17 @@ module.exports = {
             });
           } 
         }
-        await strapi.entityService.update(
-          "plugin::users-permissions.user", 
-          info.id,{
-          data: {
-            currency: WantSave.currency
-          }
+        await strapi.db.transaction(async (transaction) => {
+          await strapi.entityService.update(
+            "plugin::users-permissions.user", 
+            info.id,
+            {
+              data: {
+                currency: WantSave.currency
+              },
+              transaction 
+            }
+          );
         });
       }
       ctx.body = {
@@ -202,55 +207,56 @@ module.exports = {
   },
   async load(ctx) {
     try {
-      const info = await strapi.entityService.findOne(
-        "plugin::users-permissions.user", 
-        ctx.state.user.id,{
-        select: ['id','currency'],  
-        populate: {
-          inventories: {
-            fields: ['id','stack_item'],
-            populate: {
-              item: {
-                fields: ['id','name','type']
+        const info = await strapi.entityService.findOne(
+          "plugin::users-permissions.user", 
+          ctx.state.user.id,{
+          select: ['id','currency','mail_box'],  
+          populate: {
+            inventories: {
+              fields: ['id','stack_item'],
+              populate: {
+                item: {
+                  fields: ['id','name','type']
+                },
               },
             },
           },
-        },
-      });
-      
-      ctx.send(info);
+        });
+        ctx.send(info);
     } catch (error) {
       ctx.throw(500, error);
     }
   },
   async currencyupdate(ctx) {
     try {
+      const info = await strapi.db.query('plugin::users-permissions.user').findOne({
+        where: { id: ctx.state.user.id },
+        select: ['id', 'currency', 'mail_box'],
+      });
+  
+      if (!info) {
+        ctx.throw(404, "User not found");
+      }
+  
       await strapi.db.transaction(async (transaction) => {
-        const info = await strapi.db.query('plugin::users-permissions.user').findOne({
-          where: { id: ctx.state.user.id },
-          select: ['id', 'currency', 'mail_box'],
-          transaction,
-        });
-  
-        if (!info) {
-          throw new Error('User not found');
-        }
-  
         const CurrentCoin = info.currency + info.mail_box;
   
-        const {patch} = await strapi.db.query('plugin::users-permissions.user').update({
-          where: { id: ctx.state.user.id, mail_box: info.mail_box},
+        const { patch } = await strapi.db.query('plugin::users-permissions.user').update({
+          where: { 
+            id: ctx.state.user.id, 
+            mail_box: info.mail_box
+          },
           data: {
             currency: CurrentCoin,
             mail_box: 0,
           },
           transaction,
         });
-        
-        if (patch === 0){
+  
+        if (patch === 0) {
           throw new Error('mail_box conflict: try again!');
-        } 
-
+        }
+  
         ctx.body = {
           message: `currency is ${CurrentCoin}`,
           currency: `${CurrentCoin}`
@@ -259,5 +265,5 @@ module.exports = {
     } catch (error) {
       ctx.throw(500, error);
     }
-  },
+  }
 };
