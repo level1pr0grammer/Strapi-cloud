@@ -11,25 +11,25 @@ steps:
       - '--project'
       - 'cloud-project-448820'
 
-  # Fetch Secret and save as .env file in /workspace
+  # Fetch Secret and save as .env file
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        gcloud secrets versions access latest --secret=my-env > /workspace/.env
+        gcloud secrets versions access latest --secret=my-env > .env
+        cat .env # แสดงเพื่อตรวจสอบว่าไฟล์ถูกสร้างขึ้นจริง (ลบบรรทัดนี้ในการใช้งานจริง)
 
-  # Build Docker Image and pass .env as build argument
+  # Build Docker Image using .env
   - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
     args:
-      - 'build'
-      - '-t'
-      - 'gcr.io/cloud-project-448820/strapi:latest'
-      - '--build-arg'
-      - 'ENV_FILE_CONTENT=$(cat /workspace/.env)'
-      - '--build-arg'
-      - 'NODE_ENV=production'  # **เพิ่มตรงนี้**
-      - '.'
+      - '-c'
+      - |
+        ENV_CONTENT=$(cat .env)
+        docker build -t gcr.io/cloud-project-448820/strapi:latest \
+        --build-arg ENV_FILE_CONTENT="$ENV_CONTENT" \
+        --build-arg NODE_ENV=production .
 
   # Push Docker Image to GCR
   - name: 'gcr.io/cloud-builders/docker'
