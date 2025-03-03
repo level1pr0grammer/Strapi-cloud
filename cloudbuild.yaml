@@ -17,8 +17,7 @@ steps:
     args:
       - '-c'
       - |
-        echo "Loading secrets..."
-        gcloud secrets versions access latest --secret=my-env > .env
+        echo "MY_SECRET_ENV is: $MY_SECRET_ENV"  # ใช้ค่า MY_SECRET_ENV ที่ดึงมาจาก Secret Manager
 
   # Build Docker Image โดยใช้ .env
   - name: 'gcr.io/cloud-builders/docker'
@@ -73,7 +72,7 @@ steps:
       
 secrets:
   - secretEnv:
-    MY_SECRET_ENV: projects/473454797760/secrets/my-env
+      MY_SECRET_ENV: projects/473454797760/secrets/my-env
 
 options:
   logging: "NONE"
