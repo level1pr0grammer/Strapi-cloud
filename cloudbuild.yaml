@@ -27,6 +27,8 @@ steps:
       - 'gcr.io/cloud-project-448820/strapi:latest'
       - '--build-arg'
       - 'ENV_FILE_CONTENT=$(cat /workspace/.env)'
+      - '--build-arg'
+      - 'NODE_ENV=production'  # **เพิ่มตรงนี้**
       - '.'
 
   # Push Docker Image to GCR

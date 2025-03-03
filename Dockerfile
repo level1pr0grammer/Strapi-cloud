@@ -17,14 +17,16 @@ RUN if [ -n "$ENV_FILE_CONTENT" ]; then \
 # คัดลอกไฟล์ package.json และ package-lock.json
 COPY package.json package-lock.json ./
 
-# ติดตั้ง dependencies (เฉพาะ production dependencies เพื่อลดขนาด image)
-RUN npm install --omit=dev
+# **เซ็ต NODE_ENV เป็น production**
+ENV NODE_ENV=production
+
+# **ติดตั้ง dependencies เฉพาะ production**
+RUN npm ci --only=production
 
 # ติดตั้ง dependencies เพิ่มเติมที่จำเป็น
-RUN npm install node-cron
-RUN npm install pg --save
+RUN npm install node-cron pg --save
 
-# รัน build script
+# **สร้าง build ของ Strapi**
 RUN npm run build
 
 # คัดลอกโค้ดทั้งหมดไปยัง container
