@@ -72,7 +72,7 @@ steps:
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
       
 secrets:
-  - kmsKeyName: projects/cloud-project-448820/locations/global/keyRings/my-key-ring/cryptoKeys/my-key
+  - kmsKeyName: projects/473454797760/secrets/my-env/versions/1
     secretEnv:
       MY_SECRET_ENV: my-env
 
