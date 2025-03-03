@@ -11,12 +11,23 @@ steps:
       - '--project'
       - 'cloud-project-448820'
 
-  # Build Docker Image
+  # ดึง Secret จาก Secret Manager และสร้างไฟล์ .env
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Loading secrets..."
+        gcloud secrets versions access latest --secret=my-env > .env
+
+  # Build Docker Image โดยใช้ .env
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
       - 'gcr.io/cloud-project-448820/strapi:latest'
+      - '--build-arg'
+      - 'ENV_FILE=.env'
       - '.'
 
   # Push Docker Image ไปยัง GCR
@@ -59,6 +70,11 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
+      
+secrets:
+  - kmsKeyName: projects/cloud-project-448820/locations/global/keyRings/my-key-ring/cryptoKeys/my-key
+    secretEnv:
+      MY_SECRET_ENV: my-env
 
 options:
   logging: "NONE"
