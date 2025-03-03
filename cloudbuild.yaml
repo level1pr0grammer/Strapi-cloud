@@ -10,55 +10,15 @@ steps:
       - 'asia-southeast1'
       - '--project'
       - 'cloud-project-448820'
-
-  # Fetch Secret and save as .env file
+      
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        gcloud secrets versions access latest --secret=my-env > .env
-        
-  # แก้ไขไฟล์ Dockerfile ชั่วคราวเพื่อคัดลอก .env โดยตรง
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        cat > Dockerfile.tmp << 'EOF'
-        FROM node:22.12
-        WORKDIR /app
-        
-        # คัดลอกไฟล์ .env ก่อน
-        COPY .env .
-        
-        # คัดลอกไฟล์ package.json และ package-lock.json
-        COPY package.json package-lock.json ./
-        
-        # เซ็ต NODE_ENV เป็น production
-        ENV NODE_ENV=production
-        
-        # ติดตั้ง dependencies
-        RUN npm ci --only=production
-        
-        # ติดตั้ง dependencies เพิ่มเติมที่จำเป็น
-        RUN npm install node-cron pg --save
-        
-        # คัดลอกโค้ดทั้งหมดไปยัง container
-        COPY . .
-        
-        # สร้าง build ของ Strapi
-        RUN npm run build
-        
-        # กำหนดพอร์ตที่ใช้
-        EXPOSE 80
-        
-        # คำสั่งสำหรับรัน Strapi
-        CMD ["npm", "start"]
-        EOF
-        mv Dockerfile.tmp Dockerfile
+        gcloud secrets versions access latest --secret=STRAPI_ENV > .env
 
-  # Build Docker Image
+  # Build Docker Image using .env
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
@@ -106,6 +66,11 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
+      
+availableSecrets:
+  secretManager:
+    - versionName: projects/cloud-project-448820/secrets/my-env/versions/latest
+      env: 'MY_SECRET_ENV'
 
 options:
   logging: "NONE"

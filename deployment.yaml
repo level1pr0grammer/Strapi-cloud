@@ -19,6 +19,9 @@ spec:
       containers:
       - name: "strapi"
         image: "gcr.io/cloud-project-448820/strapi:latest"
+        envFrom:
+            - secretRef:
+                name: strapi-env  # ใช้ Secret ที่เราสร้าง
 ---
 apiVersion: "autoscaling/v2"
 kind: "HorizontalPodAutoscaler"
