@@ -11,7 +11,7 @@ steps:
       - '--project'
       - 'cloud-project-448820'
 
-  # ดึง Secret จาก Secret Manager และสร้างไฟล์ .env
+    # ดึง Secret จาก Secret Manager และสร้างไฟล์ .env
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
@@ -19,6 +19,8 @@ steps:
       - |
         echo "Loading secrets..."
         gcloud secrets versions access latest --secret=my-env > .env
+        echo "Contents of .env:"
+        cat .env  # ตรวจสอบเนื้อหาของไฟล์ .env เพื่อให้แน่ใจว่าโหลดข้อมูลได้ถูกต้อง  
 
   # Build Docker Image โดยใช้ .env
   - name: 'gcr.io/cloud-builders/docker'
