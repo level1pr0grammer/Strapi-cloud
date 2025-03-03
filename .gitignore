@@ -65,7 +65,7 @@ $RECYCLE.BIN/
 # Logs and databases
 ############################
 
-#.tmp
+.tmp
 *.log
 *.sql
 *.sqlite
@@ -129,4 +129,3 @@ dist
 build
 .strapi-updater.json
 .strapi-cloud.json
-config/databases.js

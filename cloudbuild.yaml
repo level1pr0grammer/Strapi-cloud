@@ -1,0 +1,74 @@
+steps:
+  # Connect to GKE Cluster
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'container'
+      - 'clusters'
+      - 'get-credentials'
+      - 'autopilot-strapi'
+      - '--region'
+      - 'asia-southeast1'
+      - '--project'
+      - 'cloud-project-448820'
+
+  # Fetch Secret and save as .env file
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud secrets versions access latest --secret=my-env > .env
+
+  # Build Docker Image using .env
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/cloud-project-448820/strapi:latest'
+      - '--build-arg'
+      - 'ENV_FILE=.env'
+      - '.'
+
+  # Push Docker Image to GCR
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/cloud-project-448820/strapi:latest'
+
+  # Delete old Deployment (if fails, continue)
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'delete'
+      - 'deployment'
+      - 'strapi-deploy'
+      - '-n'
+      - 'strapi'
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
+    allowFailure: true  # If this step fails, continue to the next step
+
+  # Create new Deployment
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'apply'
+      - '-f'
+      - 'deployment.yaml'
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
+
+  # Check Deployment status
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'rollout'
+      - 'status'
+      - 'deployment/strapi-deploy'
+      - '-n'
+      - 'strapi'
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
+
+options:
+  logging: "NONE"
