@@ -25,7 +25,7 @@ steps:
       - 'push'
       - 'gcr.io/cloud-project-448820/strapi:latest'
 
-  # ลบ Deployment เก่า
+  # ลบ Deployment เก่า (ถ้าล้มเหลว ให้ข้ามไป)
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
       - 'delete'
@@ -36,6 +36,7 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
+    allowFailure: true  # ถ้าขั้นตอนนี้ล้มเหลว ให้ข้ามไปต่อได้
 
   # สร้าง Deployment ใหม่
   - name: 'gcr.io/cloud-builders/kubectl'
