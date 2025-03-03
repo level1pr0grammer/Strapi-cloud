@@ -15,9 +15,21 @@ steps:
     entrypoint: 'bash'
     args:
       - '-c'
-      - '|'
-      - 'gcloud secrets versions access latest --secret=my-env > .env'
+      - |
+        gcloud secrets versions access latest --secret=my-env-encrypted > my-env.enc
 
+  # ถอดรหัสไฟล์ .env
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud kms decrypt \
+          --location=global \
+          --keyring=my-key-ring \
+          --key=my-key \
+          --ciphertext-file=my-env.enc \
+          --plaintext-file=.env
 
   # Build Docker Image โดยใช้ .env
   - name: 'gcr.io/cloud-builders/docker'
@@ -72,7 +84,7 @@ steps:
       
 secrets:
   - secretEnv:
-      MY_SECRET_ENV: projects/473454797760/secrets/my-env/versions/latest
+      MY_SECRET_ENV: projects/473454797760/secrets/my-env-encrypted/versions/1
 
 options:
   logging: "NONE"
