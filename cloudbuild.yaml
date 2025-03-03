@@ -16,7 +16,8 @@ steps:
     args:
       - '-c'
       - |
-        echo "$MY_SECRET_ENV" | base64 --decode > .env
+        echo "$MY_SECRET_ENV" | tr -d '\n' | base64 --decode > .env
+
 
   # Build Docker Image โดยใช้ .env
   - name: 'gcr.io/cloud-builders/docker'
