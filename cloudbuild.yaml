@@ -18,18 +18,53 @@ steps:
       - '-c'
       - |
         gcloud secrets versions access latest --secret=my-env > .env
-        cat .env # แสดงเพื่อตรวจสอบว่าไฟล์ถูกสร้างขึ้นจริง (ลบบรรทัดนี้ในการใช้งานจริง)
-
-  # Build Docker Image using .env
-  - name: 'gcr.io/cloud-builders/docker'
+        
+  # แก้ไขไฟล์ Dockerfile ชั่วคราวเพื่อคัดลอก .env โดยตรง
+  - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        ENV_CONTENT=$(cat .env)
-        docker build -t gcr.io/cloud-project-448820/strapi:latest \
-        --build-arg ENV_FILE_CONTENT="$ENV_CONTENT" \
-        --build-arg NODE_ENV=production .
+        cat > Dockerfile.tmp << 'EOF'
+        FROM node:22.12
+        WORKDIR /app
+        
+        # คัดลอกไฟล์ .env ก่อน
+        COPY .env .
+        
+        # คัดลอกไฟล์ package.json และ package-lock.json
+        COPY package.json package-lock.json ./
+        
+        # เซ็ต NODE_ENV เป็น production
+        ENV NODE_ENV=production
+        
+        # ติดตั้ง dependencies
+        RUN npm ci --only=production
+        
+        # ติดตั้ง dependencies เพิ่มเติมที่จำเป็น
+        RUN npm install node-cron pg --save
+        
+        # คัดลอกโค้ดทั้งหมดไปยัง container
+        COPY . .
+        
+        # สร้าง build ของ Strapi
+        RUN npm run build
+        
+        # กำหนดพอร์ตที่ใช้
+        EXPOSE 80
+        
+        # คำสั่งสำหรับรัน Strapi
+        CMD ["npm", "start"]
+        EOF
+        mv Dockerfile.tmp Dockerfile
+
+  # Build Docker Image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/cloud-project-448820/strapi:latest'
+      - '.'
 
   # Push Docker Image to GCR
   - name: 'gcr.io/cloud-builders/docker'
