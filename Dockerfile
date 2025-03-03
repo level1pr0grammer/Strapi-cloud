@@ -24,7 +24,7 @@ RUN npm install --omit=dev
 RUN npm install node-cron
 RUN npm install pg --save
 
-# รัน build script (โดย build นี้จะอ่านไฟล์ .env ที่สร้างไว้แล้ว)
+# รัน build script
 RUN npm run build
 
 # คัดลอกโค้ดทั้งหมดไปยัง container

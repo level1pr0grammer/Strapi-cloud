@@ -11,22 +11,22 @@ steps:
       - '--project'
       - 'cloud-project-448820'
 
-  # Fetch Secret and store it as an environment variable
+  # Fetch Secret and save as .env file in /workspace
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        gcloud secrets versions access latest --secret=my-env | base64 -w0 > /workspace/env.b64
+        gcloud secrets versions access latest --secret=my-env > /workspace/.env
 
-  # Build Docker Image using base64 encoded .env file
+  # Build Docker Image and pass .env as build argument
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
       - 'gcr.io/cloud-project-448820/strapi:latest'
       - '--build-arg'
-      - 'ENV_FILE_CONTENT=$(cat /workspace/env.b64 | base64 -d)'
+      - 'ENV_FILE_CONTENT=$(cat /workspace/.env)'
       - '.'
 
   # Push Docker Image to GCR
