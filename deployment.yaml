@@ -1,46 +1,33 @@
----
-apiVersion: "apps/v1"
-kind: "Deployment"
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: "strapi-deploy"
-  namespace: "strapi"
+  name: strapi-deploy
+  namespace: strapi
   labels:
-    app: "strapi"
+    app: strapi
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: "strapi"
+      app: strapi
   template:
     metadata:
       labels:
-        app: "strapi"
+        app: strapi
     spec:
       containers:
-      - name: "strapi"
-        image: "gcr.io/cloud-project-448820/strapi:latest"
+      - name: strapi
+        image: gcr.io/cloud-project-448820/strapi:latest
+        imagePullPolicy: IfNotPresent
         envFrom:
-            - secretRef:
-                name: strapi-env  # ใช้ Secret ที่เราสร้าง
----
-apiVersion: "autoscaling/v2"
-kind: "HorizontalPodAutoscaler"
-metadata:
-  name: "strapi-deploy-hpa-ruyv"
-  namespace: "strapi"
-  labels:
-    app: "strapi"
-spec:
-  scaleTargetRef:
-    kind: "Deployment"
-    name: "strapi-deploy"
-    apiVersion: "apps/v1"
-  minReplicas: 1
-  maxReplicas: 5
-  metrics:
-  - type: "Resource"
-    resource:
-      name: "cpu"
-      target:
-        type: "Utilization"
-        averageUtilization: 80
+        - secretRef:
+            name: strapi-env
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            ephemeral-storage: 1Gi
+          requests:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: 2Gi

@@ -10,7 +10,7 @@ steps:
       - 'asia-southeast1'
       - '--project'
       - 'cloud-project-448820'
-      
+
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
@@ -67,6 +67,23 @@ steps:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
       
+
+     # Update the service to use the correct selector
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'patch'
+      - 'service'
+      - 'strapi-deploy-service'
+      - '-n'
+      - 'strapi'
+      - '--type'
+      - 'json'
+      - '-p'
+      - '[{"op": "replace", "path": "/spec/selector", "value": {"app": "strapi"}}]'
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
+
 availableSecrets:
   secretManager:
     - versionName: projects/cloud-project-448820/secrets/my-env/versions/latest
