@@ -10,14 +10,13 @@ steps:
       - 'asia-southeast1'
       - '--project'
       - 'cloud-project-448820'
-
-  # Fetch Secret and save as .env file
+      
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        gcloud secrets versions access latest --secret=my-env > .env
+        gcloud secrets versions access latest --secret=STRAPI_ENV > .env
 
   # Build Docker Image using .env
   - name: 'gcr.io/cloud-builders/docker'
@@ -25,8 +24,6 @@ steps:
       - 'build'
       - '-t'
       - 'gcr.io/cloud-project-448820/strapi:latest'
-      - '--build-arg'
-      - 'ENV_FILE=.env'
       - '.'
 
   # Push Docker Image to GCR
@@ -69,6 +66,11 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
+      
+availableSecrets:
+  secretManager:
+    - versionName: projects/cloud-project-448820/secrets/my-env/versions/latest
+      env: 'MY_SECRET_ENV'
 
 options:
   logging: "NONE"
