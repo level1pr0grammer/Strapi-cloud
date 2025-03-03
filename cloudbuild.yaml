@@ -15,8 +15,8 @@ steps:
     entrypoint: 'bash'
     args:
       - '-c'
-      - |
-        echo "MY_SECRET_ENV: $MY_SECRET_ENV"
+      - '|'
+      - 'gcloud secrets versions access latest --secret=my-env > .env'
 
 
   # Build Docker Image โดยใช้ .env
