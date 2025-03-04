@@ -21,7 +21,7 @@ spec:
         imagePullPolicy: Always
         envFrom:
         - secretRef:
-            name: strapi-env
+            name: strapi-env  # ชื่อ Secret ที่ต้องการใช้
         ports:
         - containerPort: 80
         resources:
