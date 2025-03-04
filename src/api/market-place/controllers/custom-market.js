@@ -109,7 +109,7 @@ module.exports = {
           await strapi.db.transaction(async (transaction) => {
             await strapi.entityService.update(
               "plugin::users-permissions.user",
-              info.documentId,
+              info.id,
               {
                 data: {
                   currency: CurrentCoin,
@@ -121,7 +121,7 @@ module.exports = {
             const income = CheckOrder.seller.mail_box + CheckOrder.price;
             await strapi.entityService.update(
               "plugin::users-permissions.user",
-              CheckOrder.seller.documentId,
+              CheckOrder.seller.id,
               {
                 data: {
                   mail_box: income,
@@ -133,17 +133,17 @@ module.exports = {
             const ExistingItem = await strapi.db.query('api::inventory.inventory').findOne({
               select: ['id', 'stack_item', 'documentId'],
               where: {
-                user: info.documentId,
-                item: CheckOrder.item.documentId
+                user: info.id,
+                item: CheckOrder.item.id
               },
             });
       
             if (!ExistingItem) {
               await strapi.db.query('api::inventory.inventory').create({
                 data: {
-                  item: CheckOrder.item.documentId,
+                  item: CheckOrder.item.id,
                   stack_item: CheckOrder.amount,
-                  user: info.documentId
+                  user: info.id
                 },
               },
                 transaction
@@ -152,7 +152,7 @@ module.exports = {
               const CurrentAmount = CheckOrder.amount + ExistingItem.stack_item;
               await strapi.db.query('api::inventory.inventory').update({
                 where: {
-                  documentId: ExistingItem.documentId
+                  id: ExistingItem.id
                 },
                 data: {
                   stack_item: CurrentAmount
@@ -169,7 +169,7 @@ module.exports = {
               },
               data: {
                 sell_status: 'success',
-                buyer: info.documentId,
+                buyer: info.id,
                 end_date: now
               },
             },
