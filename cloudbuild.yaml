@@ -76,6 +76,20 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
+    # Wait for Strapi API to be ready (Optional)
+  - name: 'gcr.io/cloud-builders/curl'
+    args:
+      - '--retry' 
+      - '10'
+      - '--retry-delay' 
+      - '10'
+      - '--max-time' 
+      - '300'
+      - '--fail'
+      - 'http://34.124.146.11:80'  # URL ของ Strapi
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
 
   # Publish message to Pub/Sub after deployment is complete
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -85,6 +99,6 @@ steps:
       - 'publish'
       - 'announce'
       - '--message="open"'
-      
+
 options:
   logging: "NONE"
