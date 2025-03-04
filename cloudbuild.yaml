@@ -11,14 +11,6 @@ steps:
       - '--project'
       - 'cloud-project-448820'
 
-  # Access secret and store it in .env
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        gcloud secrets versions access latest --secret=strapi-env > .env
-
   # Build Docker Image using .env
   - name: 'gcr.io/cloud-builders/docker'
     args:
