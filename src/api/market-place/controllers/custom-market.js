@@ -61,7 +61,7 @@ module.exports = {
           });
         }
 
-        const now = new Date(); // เวลาปัจจุบัน
+        const now = new Date();
         const CreatedOrder = await strapi.db.query('api::market-place.market-place').create({
           data: {
             amount: order.amount,
