@@ -68,7 +68,10 @@ steps:
       - 'strapi-deploy-service'
       - '-n'
       - 'strapi'
-
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
+      
   # Update the service to use the correct selector
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
