@@ -11,20 +11,6 @@ steps:
       - '--project'
       - 'cloud-project-448820'
 
-  # Build Docker Image using .env
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'build'
-      - '-t'
-      - 'gcr.io/cloud-project-448820/strapi:latest'
-      - '.'
-
-  # Push Docker Image to GCR
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'push'
-      - 'gcr.io/cloud-project-448820/strapi:latest'
-
   # Delete old Deployment (if fails, continue)
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
@@ -37,6 +23,31 @@ steps:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
     allowFailure: true  # If this step fails, continue to the next step
+
+  # Build Docker Image with no cache
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '--no-cache'
+      - '-t'
+      - 'gcr.io/cloud-project-448820/strapi:latest'
+      - '.'
+
+  # Push Docker Image to GCR
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/cloud-project-448820/strapi:latest'
+
+  # set Docker Image to k8s
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'set'
+      - 'image'
+      - 'deployment/strapi-deploy'
+      - 'strapi=gcr.io/cloud-project-448820/strapi:latest'
+      - '-n'
+      - 'strapi'
 
   # Create new Deployment
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -54,18 +65,6 @@ steps:
       - 'rollout'
       - 'status'
       - 'deployment/strapi-deploy'
-      - '-n'
-      - 'strapi'
-    env:
-      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
-
-  # Check Service Status
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args:
-      - 'get'
-      - 'svc'
-      - 'strapi-deploy-service'
       - '-n'
       - 'strapi'
     env:
