@@ -18,7 +18,7 @@ spec:
       containers:
       - name: strapi
         image: gcr.io/cloud-project-448820/strapi:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         envFrom:
         - secretRef:
             name: strapi-env

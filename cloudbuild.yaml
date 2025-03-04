@@ -11,20 +11,6 @@ steps:
       - '--project'
       - 'cloud-project-448820'
 
-  # Fetch the latest code from GitHub
-  - name: 'gcr.io/cloud-builders/git'
-    args:
-      - 'clone'
-      - 'https://github.com/level1pr0grammer/Strapi-cloud.git'
-      - '--branch=main'
-      - '--depth=1'
-    dir: '/workspace'
-
-  # Move into the project directory
-  - name: 'gcr.io/cloud-builders/git'
-    args: ['checkout', 'main']
-    dir: '/workspace/Strapi-cloud'
-
   # Delete old Deployment (if fails, continue)
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
@@ -46,7 +32,6 @@ steps:
       - '-t'
       - 'gcr.io/cloud-project-448820/strapi:latest'
       - '.'
-    dir: '/workspace/Strapi-cloud'
 
   # Push Docker Image to GCR
   - name: 'gcr.io/cloud-builders/docker'
@@ -63,7 +48,6 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
-    dir: '/workspace/Strapi-cloud'
 
   # Check Deployment status
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -76,7 +60,7 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
-
+      
   # Update the service to use the correct selector
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
