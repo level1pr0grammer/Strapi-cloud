@@ -39,19 +39,6 @@ steps:
       - 'push'
       - 'gcr.io/cloud-project-448820/strapi:latest'
 
-  # set Docker Image to k8s
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args:
-      - 'set'
-      - 'image'
-      - 'deployment/strapi-deploy'
-      - 'strapi=gcr.io/cloud-project-448820/strapi:latest'
-      - '-n'
-      - 'strapi'
-    env:
-      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
-      
   # Create new Deployment
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
