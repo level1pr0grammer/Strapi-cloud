@@ -60,15 +60,6 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
-  
-  # Publish message to Pub/Sub after deployment is complete
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args:
-      - 'pubsub'
-      - 'topics'
-      - 'publish'
-      - 'announce'
-      - '--message="open"'
 
   # Update the service to use the correct selector
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -86,5 +77,14 @@ steps:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
 
+  # Publish message to Pub/Sub after deployment is complete
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'pubsub'
+      - 'topics'
+      - 'publish'
+      - 'announce'
+      - '--message="open"'
+      
 options:
   logging: "NONE"
