@@ -43,7 +43,7 @@ start-postgres:
 
 enable-build:
 	@echo "Enabling Cloud Build trigger..."
-	gcloud builds triggers update strapi--build --no-disabled --project=$(PROJECT_ID)
+	gcloud builds triggers update 8719b850-857f-43c4-ba60-ccc2a253f43e --no-disabled --project=$(PROJECT_ID)
 
 apply-deployment:
 	@echo "Applying deployment.yaml..."
