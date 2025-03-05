@@ -10,6 +10,8 @@ DB_INSTANCE=postgresql
 DEPLOYMENT=strapi-deploy
 NAMESPACE=strapi
 
+HPA=strapi-hpa
+VPA=strapi-vpa
 # =====================
 # STOP SERVER
 # =====================
@@ -22,6 +24,8 @@ stop-postgres:
 delete-strapi:
 	@echo "Deleting Strapi workload..."
 	gcloud container clusters get-credentials $(CLUSTER) --region $(REGION) --project $(PROJECT_ID)
+	kubectl delete hpa $(HPA) -n $(NAMESPACE) || true
+	kubectl delete vpa $(VPA) -n $(NAMESPACE) || true
 	kubectl delete deployment $(DEPLOYMENT) -n $(NAMESPACE) || true
 	@echo "Strapi workload deleted."
 
