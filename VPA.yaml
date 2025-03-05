@@ -3,7 +3,6 @@ kind: VerticalPodAutoscaler
 metadata:
   name: strapi-deploy
   namespace: strapi
-  clusterName: autopilot-strapi
 spec:
   targetRef:
     kind: Deployment
