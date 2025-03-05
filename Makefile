@@ -37,6 +37,8 @@ start-postgres:
 apply-deployment:
 	@echo "Applying deployment.yaml..."
 	gcloud container clusters get-credentials $(CLUSTER) --region $(REGION) --project $(PROJECT_ID)
-	kubectl apply -f deployment.yaml -n $(NAMESPACE)
+	kubectl apply -f deployment.yaml
+	kubectl apply -f HPA.yaml
+	kubectl apply -f VPA.yaml
 	kubectl patch service strapi-deploy-service -n $(NAMESPACE) --type json -p '[{"op": "replace", "path": "/spec/selector", "value": {"app": "strapi"}}]'
 	@echo "Deployment applied successfully."

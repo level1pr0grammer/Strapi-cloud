@@ -1,0 +1,26 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: strapi-hpa
+  namespace: strapi
+  clusterName: autopilot-strapi
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: strapi-deploy
+  minReplicas: 1  # จำนวน Pods ขั้นต่ำ
+  maxReplicas: 3  # จำนวน Pods สูงสุด
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80  # Auto scale ถ้าใช้ CPU > 80%
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80  # Auto scale ถ้าใช้ Memory > 80%

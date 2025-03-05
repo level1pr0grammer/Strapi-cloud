@@ -49,6 +49,26 @@ steps:
       - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
 
+   # Create HPA
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'apply'
+      - '-f'
+      - 'HPA.yaml'
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
+    
+     # Create VPA
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'apply'
+      - '-f'
+      - 'VPA.yaml'
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=asia-southeast1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-strapi'
+
   # Check Deployment status
   - name: 'gcr.io/cloud-builders/kubectl'
     args:

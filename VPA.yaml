@@ -1,0 +1,24 @@
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: strapi-deploy
+  namespace: strapi
+  clusterName: autopilot-strapi
+spec:
+  targetRef:
+    kind: Deployment
+    name: strapi-deploy
+    apiVersion: apps/v1
+  updatePolicy:
+    updateMode: "Auto" # ปรับขนาดอัตโนมัติ (อาจมี downtime)
+  resourcePolicy:
+    containerPolicies:
+      - containerName: strapi
+        mode: "Auto" # ให้ VPA ปรับขนาดอัตโนมัติ
+        minAllowed:
+          cpu: "250m"   # CPU ขั้นต่ำ 250m (0.25 vCPU)
+          memory: "512Mi" # RAM ขั้นต่ำ 512Mi
+        maxAllowed:
+          cpu: "2"      # CPU สูงสุด 2 vCPU
+          memory: "4Gi"  # RAM สูงสุด 4GB
+        controlledResources: ["cpu", "memory"]
