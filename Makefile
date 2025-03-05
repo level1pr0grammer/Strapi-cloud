@@ -6,9 +6,6 @@ SERVICE_ACCOUNT=cloud-sql-proxy@$(PROJECT_ID).iam.gserviceaccount.com
 # Cloud SQL Instance
 DB_INSTANCE=postgresql
 
-# Cloud Build Trigger Name
-BUILD_TRIGGER=strapi--build
-
 # Kubernetes Deployment and Namespace
 DEPLOYMENT=strapi-deploy
 NAMESPACE=strapi
@@ -21,10 +18,6 @@ stop: stop-postgres disable-build delete-strapi
 stop-postgres:
 	@echo "Stopping PostgreSQL instance..."
 	gcloud sql instances patch $(DB_INSTANCE) --activation-policy NEVER --project=$(PROJECT_ID) --quiet
-
-disable-build:
-	@echo "Disabling Cloud Build trigger..."
-	gcloud beta builds triggers update $(BUILD_TRIGGER) --disable --project=$(PROJECT_ID)
 
 delete-strapi:
 	@echo "Deleting Strapi workload..."
@@ -40,10 +33,6 @@ start: start-postgres enable-build apply-deployment
 start-postgres:
 	@echo "Starting PostgreSQL instance..."
 	gcloud sql instances patch $(DB_INSTANCE) --activation-policy ALWAYS --project=$(PROJECT_ID) --quiet
-
-enable-build:
-	@echo "Enabling Cloud Build trigger..."
-	gcloud builds triggers update 8719b850-857f-43c4-ba60-ccc2a253f43e --no-disabled --project=$(PROJECT_ID)
 
 apply-deployment:
 	@echo "Applying deployment.yaml..."
