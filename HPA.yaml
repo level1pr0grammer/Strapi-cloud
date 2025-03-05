@@ -3,7 +3,6 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: strapi-hpa
   namespace: strapi
-  clusterName: autopilot-strapi
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
