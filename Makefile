@@ -13,7 +13,7 @@ NAMESPACE=strapi
 # =====================
 # STOP SERVER
 # =====================
-stop: stop-postgres disable-build delete-strapi
+stop: stop-postgres delete-strapi
 
 stop-postgres:
 	@echo "Stopping PostgreSQL instance..."
@@ -28,7 +28,7 @@ delete-strapi:
 # =====================
 # START SERVER
 # =====================
-start: start-postgres enable-build apply-deployment
+start: start-postgres apply-deployment
 
 start-postgres:
 	@echo "Starting PostgreSQL instance..."
