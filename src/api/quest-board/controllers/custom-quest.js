@@ -9,7 +9,7 @@ module.exports = {
                     fields: ['id','rank','amount'],
                     populate: {
                         item: {
-                            fields: ['id','name'],
+                            fields: ['id','name','rank'],
                         }
                     }
                   },
@@ -17,7 +17,7 @@ module.exports = {
                     fields: ['id','stack_item'],
                     populate: {
                         item: {
-                            fields: ['id','name'],
+                            fields: ['id','name','rank'],
                         },
                     }
                    },
@@ -29,13 +29,18 @@ module.exports = {
                     where: {
                         rank: {$eq: 'E'}
                     },
-                    select: ['id','name'],
+                    select: ['id','name','rank'],
                 });
                 
                 const Index = Math.floor(Math.random() * (RankD.length)); 
                 const Range = Math.floor(Math.random() * (300-150)) + 150;
 
                 const Quest = await strapi.db.query('api::quest-board.quest-board').create({
+                populate: {
+                        item: {
+                            fields: ['id','name','rank'],
+                        }
+                    },
                 data: {
                     amount: Range,
                     item: RankD[Index],
@@ -44,7 +49,7 @@ module.exports = {
                 });
 
                 ctx.body = {
-                    message: `Next Quest collect ${RankD[Index]} amount ${Range} piece for send to DemonLord`,
+                    message: `Next Quest collect ${RankD[Index].name} amount ${Range} piece for send to DemonLord`,
                     Quest
                 }
             }else {
@@ -69,7 +74,7 @@ module.exports = {
                                     where: {
                                         rank: { $eq: list_rank[New_Index] }
                                     },
-                                    select: ['id','name'],
+                                    select: ['id','name','rank'],
                                 });
                                 const Index = Math.floor(Math.random() * (RankXX.length)); 
                                 const Range = Math.floor(Math.random() * (max[New_Index] - min[New_Index])) + min[New_Index];
@@ -77,6 +82,11 @@ module.exports = {
                                 const NewQuest = await strapi.db.query('api::quest-board.quest-board').update({
                                     where: {
                                         id: info.quest_board.id
+                                    },
+                                    populate: {
+                                        item: {
+                                            fields: ['id','name','rank'],
+                                        }
                                     },
                                     data: {
                                         amount: Range,
@@ -104,7 +114,6 @@ module.exports = {
                                       });
                                     } 
                                 
-                                console.log(RankXX[Index].name);
                                 ctx.body = {
                                     message: `Next Quest collect ${RankXX[Index].name} amount ${Range} piece for send to DemonLord`,
                                     NewQuest
@@ -113,7 +122,8 @@ module.exports = {
                             
                         }else { //ของไม่พอ
                             ctx.body = {
-                                message: `Amount Item Not Enough for Quest`
+                                message: `Amount Item Not Enough for Quest Require ${ExistingItem.item.name} more ${ExistingItem.amount-QuestItem[i].stack_item}`,
+                                ExistingItem
                             }
                         }
                     }
