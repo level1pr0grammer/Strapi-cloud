@@ -36,6 +36,23 @@
       "relation": "oneToMany",
       "target": "api::market-place.market-place",
       "mappedBy": "item"
+    },
+    "quest_boards": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::quest-board.quest-board",
+      "mappedBy": "item"
+    },
+    "rank": {
+      "type": "enumeration",
+      "enum": [
+        "E",
+        "D",
+        "C",
+        "B",
+        "A",
+        "S"
+      ]
     }
   }
 }

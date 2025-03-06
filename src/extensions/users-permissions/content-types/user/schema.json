@@ -92,6 +92,12 @@
       "type": "integer",
       "min": 0,
       "default": 0
+    },
+    "quest_board": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::quest-board.quest-board",
+      "inversedBy": "owner"
     }
   }
 }

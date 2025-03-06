@@ -438,6 +438,11 @@ export interface ApiItemItem extends Struct.CollectionTypeSchema {
     >;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
+    quest_boards: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::quest-board.quest-board'
+    >;
+    rank: Schema.Attribute.Enumeration<['E', 'D', 'C', 'B', 'A', 'S']>;
     type: Schema.Attribute.Enumeration<
       ['Equipment', 'Consumable', 'Material']
     > &
@@ -496,12 +501,57 @@ export interface ApiMarketPlaceMarketPlace extends Struct.CollectionTypeSchema {
       Schema.Attribute.DefaultTo<0>;
     publish_date: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
+    sell_status: Schema.Attribute.Enumeration<['pending', 'success', 'fail']> &
+      Schema.Attribute.DefaultTo<'pending'>;
     seller: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.user'
     >;
-    sell_status: Schema.Attribute.Enumeration<['pending', 'success', 'fail']> &
-      Schema.Attribute.DefaultTo<'pending'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiQuestBoardQuestBoard extends Struct.CollectionTypeSchema {
+  collectionName: 'quest_boards';
+  info: {
+    description: '';
+    displayName: 'Quest Board';
+    pluralName: 'quest-boards';
+    singularName: 'quest-board';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    amount: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    item: Schema.Attribute.Relation<'manyToOne', 'api::item.item'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::quest-board.quest-board'
+    > &
+      Schema.Attribute.Private;
+    owner: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::users-permissions.user'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    rank: Schema.Attribute.Enumeration<['E', 'D', 'C', 'B', 'A', 'S']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'E'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1013,6 +1063,10 @@ export interface PluginUsersPermissionsUser
       }>;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    quest_board: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::quest-board.quest-board'
+    >;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
     role: Schema.Attribute.Relation<
       'manyToOne',
@@ -1047,6 +1101,7 @@ declare module '@strapi/strapi' {
       'api::inventory.inventory': ApiInventoryInventory;
       'api::item.item': ApiItemItem;
       'api::market-place.market-place': ApiMarketPlaceMarketPlace;
+      'api::quest-board.quest-board': ApiQuestBoardQuestBoard;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

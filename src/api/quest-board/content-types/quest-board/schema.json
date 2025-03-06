@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "quest_boards",
+  "info": {
+    "singularName": "quest-board",
+    "pluralName": "quest-boards",
+    "displayName": "Quest Board",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "item": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::item.item",
+      "inversedBy": "quest_boards"
+    },
+    "owner": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "quest_board"
+    },
+    "rank": {
+      "type": "enumeration",
+      "enum": [
+        "E",
+        "D",
+        "C",
+        "B",
+        "A",
+        "S"
+      ],
+      "default": "E",
+      "required": true
+    },
+    "amount": {
+      "type": "integer",
+      "default": 0,
+      "required": true,
+      "min": 0
+    }
+  }
+}
