@@ -35,7 +35,7 @@ module.exports = {
                 const Index = Math.floor(Math.random() * (RankD.length)); 
                 const Range = Math.floor(Math.random() * (300-150)) + 150;
 
-                const Quest = await strapi.db.query('api::quest-board.quest-board').create({
+                const NewQuest = await strapi.db.query('api::quest-board.quest-board').create({
                 populate: {
                         item: {
                             fields: ['id','name','rank'],
@@ -50,7 +50,7 @@ module.exports = {
 
                 ctx.body = {
                     message: `Next Quest collect ${RankD[Index].name} amount ${Range} piece for send to DemonLord`,
-                    Quest
+                    NewQuest
                 }
             }else {
                 const list_rank = ['E','D','C','B','A','S'];
@@ -121,9 +121,10 @@ module.exports = {
                             }
                             
                         }else { //ของไม่พอ
+                            const NewQuest = ExistingItem;
                             ctx.body = {
                                 message: `Amount Item Not Enough for Quest Require ${ExistingItem.item.name} more ${ExistingItem.amount-QuestItem[i].stack_item}`,
-                                ExistingItem
+                                NewQuest
                             }
                         }
                     }
