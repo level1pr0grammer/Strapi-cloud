@@ -18,6 +18,6 @@ spec:
           cpu: "250m"   # CPU ขั้นต่ำ 250m (0.25 vCPU)
           memory: "512Mi" # RAM ขั้นต่ำ 512Mi
         maxAllowed:
-          cpu: "2"      # CPU สูงสุด 2 vCPU
-          memory: "4Gi"  # RAM สูงสุด 4GB
+          cpu: "4"      # CPU สูงสุด 2 vCPU
+          memory: "8Gi"  # RAM สูงสุด 4GB
         controlledResources: ["cpu", "memory"]

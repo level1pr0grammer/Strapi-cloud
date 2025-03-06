@@ -8,8 +8,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: strapi-deploy
-  minReplicas: 1  # จำนวน Pods ขั้นต่ำ
-  maxReplicas: 3  # จำนวน Pods สูงสุด
+  minReplicas: 3  # จำนวน Pods ขั้นต่ำ
+  maxReplicas: 5  # จำนวน Pods สูงสุด
   metrics:
     - type: Resource
       resource:
